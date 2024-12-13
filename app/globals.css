@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,5 +19,46 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Rubik";
+  font-size: 16px;
+}
+
+.comment-container {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-areas:
+    "user date"
+    "comment comment"
+    "voting reply";
+  grid-template-columns: 150px 1fr;
+}
+
+.voting {
+  grid-area: voting;
+}
+
+.user {
+  grid-area: user;
+}
+
+.date {
+  grid-area: date;
+}
+
+.reply {
+  grid-area: reply;
+}
+
+.comment {
+  grid-area: comment;
+}
+
+@media (min-width: 768px) {
+  .comment-container {
+    grid-template-areas:
+      "voting user date reply"
+      "voting comment comment comment"
+      "voting comment comment comment";
+    grid-template-columns: 45px 150px 1fr;
+  }
 }
