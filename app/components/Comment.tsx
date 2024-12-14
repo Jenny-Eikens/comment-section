@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { SetStateAction, useState } from "react";
+import { CurrentUser } from "./CommentsPage";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -50,36 +51,55 @@ interface Comment {
   content: string;
   createdAt: string;
   score: number;
-  replyingTo: string;
+  replyingTo?: string;
   user: {
     image: { png: string; webp: string };
     username: string;
   };
-  replies: [];
+  replies?: Comment[];
 }
 
 interface CommentProps {
-  comment: {
-    id: number;
-    content: string;
-    createdAt: string;
-    score: number;
-    replyingTo: string;
-    user: {
-      image: { png: string; webp: string };
-      username: string;
-    };
-    replies: [];
-  };
+  comment: Comment;
+  currentUser: CurrentUser | null;
+  deleteComment: (id: number) => void;
+  editComment: (id: number, newContent: string) => void;
 }
 
-const Comment = ({ comment }: CommentProps) => {
+const Comment = ({
+  comment,
+  currentUser,
+  deleteComment,
+  editComment,
+}: CommentProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedComment, setEditedComment] = useState(
+    comment.replyingTo
+      ? `@${comment.replyingTo} ${comment.content}`
+      : comment.content,
+  );
+  let reply = "Reply";
+  let update = "Update";
+  const isUser = comment.user.username === currentUser?.username;
   const handleClickPlus = () => {
     setScore(score + 1);
   };
 
   const handleClickMinus = () => {
     if (score > 0) setScore(score - 1);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditedComment(e.target.value);
+  };
+
+  const handleEdit = () => {
+    if (editedComment.trim() !== "") {
+      editComment(comment.id, editedComment);
+      setIsEditing(false);
+    } else {
+      alert("Comment cannot be empty.");
+    }
   };
 
   const [score, setScore] = useState(comment.score);
@@ -90,12 +110,20 @@ const Comment = ({ comment }: CommentProps) => {
         key={comment.id}
       >
         {/* Voting */}
-        <div className="voting flex w-[70%] flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[90%] md:w-auto md:flex-col md:space-y-2 md:py-3">
-          <button className="p-1" onClick={() => handleClickPlus()}>
+        <div className="voting flex w-[80%] flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[90%] md:w-auto md:flex-col md:space-y-2 md:py-3">
+          <button
+            className="p-1"
+            onClick={() => handleClickPlus()}
+            disabled={isUser}
+          >
             {iconPlus}
           </button>
           <span className="font-bold text-mod-blue">{score}</span>
-          <button className="p-1" onClick={() => handleClickMinus()}>
+          <button
+            className="p-1"
+            onClick={() => handleClickMinus()}
+            disabled={isUser}
+          >
             {iconMinus}
           </button>
         </div>
@@ -110,26 +138,80 @@ const Comment = ({ comment }: CommentProps) => {
             />
           </div>
           {/* Username, createdAt */}
-          <span className="username font-bold">{comment.user.username}</span>
+          <span className="font-bold">{comment.user.username}</span>
+          {isUser && (
+            <span className="badge rounded-[0.2rem] bg-mod-blue font-bold text-white">
+              you
+            </span>
+          )}
+          <span className="date flex items-center text-gray-blue">
+            {comment.createdAt}
+          </span>
         </div>
-        <span className="date flex items-center text-gray-blue">
-          {comment.createdAt}
-        </span>
 
-        {/* Reply button */}
-        <button className="reply flex items-center justify-end space-x-2">
-          {iconReply} <span className="font-bold text-mod-blue">Reply</span>
-        </button>
-        {/* Content */}
-        <div className="comment text-gray-blue md:pr-2">
-          <p>{comment.content}</p>
-        </div>
+        {isUser ? (
+          <div className="interactive flex space-x-4">
+            <button
+              className="flex items-center space-x-2"
+              onClick={() => {
+                deleteComment(comment.id);
+              }}
+            >
+              {iconDelete}{" "}
+              <span className="font-bold text-soft-red">Delete</span>
+            </button>
+            <button
+              className="flex items-center space-x-2"
+              onClick={() => setIsEditing(true)}
+            >
+              {iconEdit} <span className="font-bold text-mod-blue">Edit</span>
+            </button>
+          </div>
+        ) : (
+          <button className="reply flex items-center justify-end space-x-2">
+            {iconReply} <span className="font-bold text-mod-blue">Reply</span>
+          </button>
+        )}
+
+        {isEditing ? (
+          <>
+            <textarea
+              className="comment textarea textarea-bordered"
+              value={editedComment}
+              onChange={handleChange}
+            ></textarea>
+            <button
+              className="update md:px-auto ml-auto rounded-md bg-mod-blue p-2 px-3 font-[500] text-white md:w-[70%]"
+              onClick={handleEdit}
+            >
+              {update.toUpperCase()}{" "}
+            </button>
+          </>
+        ) : (
+          <div className="comment text-gray-blue md:pr-2">
+            {comment.replyingTo && (
+              <a
+                href="#"
+                className="font-bold text-mod-blue hover:cursor-pointer"
+              >
+                @{comment.replyingTo}{" "}
+              </a>
+            )}
+            <p className="inline">{comment.content}</p>
+          </div>
+        )}
       </div>
 
       {comment.replies?.length > 0 && (
         <div className="replies ml-4 space-y-4 md:ml-[4rem]">
           {comment.replies.map((reply: Comment) => (
-            <Comment key={reply.id} comment={reply} />
+            <Comment
+              key={reply.id}
+              comment={reply}
+              currentUser={currentUser}
+              deleteComment={deleteComment}
+              editComment={editComment}
+            />
           ))}
         </div>
       )}

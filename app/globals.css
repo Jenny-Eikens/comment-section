@@ -4,9 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TODO for later:
+- find better solution than putting date in grid-area user
+*/
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,10 +35,11 @@ body {
   display: grid;
   gap: 0.5rem;
   grid-template-areas:
-    "user date"
+    "user user"
     "comment comment"
-    "voting reply";
-  grid-template-columns: 150px 1fr;
+    "update update"
+    "voting interact";
+  grid-template-columns: 130px 1fr;
 }
 
 .voting {
@@ -42,23 +51,28 @@ body {
 }
 
 .date {
-  grid-area: date;
+  grid-area: user;
 }
 
 .reply {
-  grid-area: reply;
+  grid-area: interact;
 }
 
 .comment {
   grid-area: comment;
 }
 
+.update {
+  grid-area: update;
+}
+
 @media (min-width: 768px) {
   .comment-container {
     grid-template-areas:
-      "voting user date reply"
+      "voting user user interact"
       "voting comment comment comment"
-      "voting comment comment comment";
-    grid-template-columns: 45px 150px 1fr;
+      "voting comment comment comment"
+      ". . . update";
+    grid-template-columns: 45px 1fr;
   }
 }
