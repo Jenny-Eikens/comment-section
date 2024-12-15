@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from "react";
+import React, { useState, useRef } from "react";
 import { CurrentUser } from "./CommentsPage";
 
 const iconPlus = (
@@ -64,6 +64,8 @@ interface CommentProps {
   currentUser: CurrentUser | null;
   deleteComment: (id: number) => void;
   editComment: (id: number, newContent: string) => void;
+  /* return type is set to void here because return value isn't relevant to /  won't be used by component */
+  /* child component only triggers function, parent handles state update */
 }
 
 const Comment = ({
@@ -72,12 +74,18 @@ const Comment = ({
   deleteComment,
   editComment,
 }: CommentProps) => {
+  const [score, setScore] = useState(comment.score);
   const [isEditing, setIsEditing] = useState(false);
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo
       ? `@${comment.replyingTo} ${comment.content}`
       : comment.content,
   );
+  const dialogRef =
+    useRef<HTMLDialogElement>(
+      null,
+    ); /* ref allows for direct interaction with DOM element / React component without use of state */
+
   let reply = "Reply";
   let update = "Update";
   const isUser = comment.user.username === currentUser?.username;
@@ -95,6 +103,7 @@ const Comment = ({
 
   const handleEdit = () => {
     if (editedComment.trim() !== "") {
+      /* trim() removes whitespace from both ends of a string */
       editComment(comment.id, editedComment);
       setIsEditing(false);
     } else {
@@ -102,7 +111,18 @@ const Comment = ({
     }
   };
 
-  const [score, setScore] = useState(comment.score);
+  const handleOpenModal = () => {
+    if (dialogRef.current) {
+      dialogRef.current.showModal(); /* ref.current accesses element and allows calling of its methods */
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+  };
+
   return (
     <>
       <div
@@ -151,15 +171,49 @@ const Comment = ({
 
         {isUser ? (
           <div className="interactive flex space-x-4">
+            {/* Delete button */}
             <button
               className="flex items-center space-x-2"
-              onClick={() => {
-                deleteComment(comment.id);
-              }}
+              onClick={handleOpenModal}
             >
               {iconDelete}{" "}
               <span className="font-bold text-soft-red">Delete</span>
             </button>
+            {/* Modal */}
+            <dialog ref={dialogRef} className="modal p-4 md:p-0">
+              <div className="modal-box w-[100%] max-w-[400px] space-y-2 rounded-lg p-6 md:rounded-md md:p-8">
+                <h3 className="text-2xl font-[500]">Delete comment</h3>
+                <p className="py-4 text-gray-blue">
+                  Are you sure you want to delete this comment? This will remove
+                  the comment and can't be undone.
+                </p>
+                <div className="modal-action">
+                  <form
+                    method="dialog"
+                    className="grid w-full grid-cols-2 gap-3"
+                  >
+                    {/* if there is a button in form, it will close the modal */}
+                    <button
+                      onClick={handleCloseModal}
+                      className="rounded-lg bg-gray-blue p-3 text-lg font-[500] text-white"
+                    >
+                      NO, CANCEL
+                    </button>
+                    <button
+                      onClick={() => {
+                        deleteComment(comment.id);
+                        handleCloseModal;
+                      }}
+                      className="rounded-lg bg-soft-red p-3 text-lg font-[500] text-white"
+                    >
+                      YES, DELETE
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
+
+            {/* Edit button */}
             <button
               className="flex items-center space-x-2"
               onClick={() => setIsEditing(true)}
@@ -168,6 +222,7 @@ const Comment = ({
             </button>
           </div>
         ) : (
+          /* Reply button */
           <button className="reply flex items-center justify-end space-x-2">
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>

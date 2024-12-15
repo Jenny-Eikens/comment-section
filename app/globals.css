@@ -29,6 +29,7 @@ body {
   background: var(--background);
   font-family: "Rubik";
   font-size: 16px;
+  @apply text-dark-blue;
 }
 
 .comment-container {

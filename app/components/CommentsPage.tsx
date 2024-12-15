@@ -5,7 +5,6 @@ import CommentForm from "./CommentForm";
 
 {
   /* TO-DO:
-  - understand editing comments
   - figure out how to update data.json (send changed data to backend)
 */
 }
@@ -16,7 +15,9 @@ export interface CurrentUser {
 }
 
 const CommentsPage = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Comment[]>(
+    [],
+  ); /* initialized to empty array */
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const CommentsPage = () => {
         const res = await fetch("/data.json");
         if (!res.ok) throw new Error("Failed to fetch comments");
         const data = await res.json();
-        setComments(data.comments);
+        setComments(data.comments); /* set to data retrieved from backend */
         setCurrentUser(data.currentUser);
       } catch (error) {
         console.log(error);
@@ -39,9 +40,7 @@ const CommentsPage = () => {
     id: number,
     newContent: string,
   ): Comment[] => {
-    {
-      /* Note to self: have this explained to you */
-    }
+    /* : Comment[] specifies function's return type */
     return comments.map((comment) => {
       if (comment.id === id) {
         return {
@@ -53,21 +52,23 @@ const CommentsPage = () => {
         return {
           ...comment,
           replies: editComment(comment.replies, id, newContent),
+          /* recursion, function gets called on replies array instead of comments array */
+          /* comments now refers to comment.replies */
         };
       }
       return comment;
     });
-  };
+  }; /* not setting the comments' state directly in this function keeps it reusable and not tied to specific state */
 
   const deleteComment = (id: number): void => {
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments
         .filter((comment) => comment.id !== id)
         .map((comment) => {
-          if (comment.replies) {
+          if (comment.replies && comment.replies.length > 0) {
             return {
               ...comment,
-              replies: removeComment(comment.replies),
+              replies: removeComment(comment.replies) /* recursion */,
             };
           }
           return comment;
@@ -87,11 +88,14 @@ const CommentsPage = () => {
             comment={comment}
             currentUser={currentUser}
             deleteComment={deleteComment}
-            editComment={(id: number, newContent: string) =>
-              setComments((prevComments) =>
-                editComment(prevComments, id, newContent),
-              )
-            }
+            editComment={
+              (id: number, newContent: string) =>
+                setComments(
+                  (
+                    prevComments /* prevComments represents current state value, name could be anything */,
+                  ) => editComment(prevComments, id, newContent),
+                ) /* calling setComments is necessary because editComment alone doesn't update comments variable */
+            } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
           />
         ))}
         <CommentForm />
