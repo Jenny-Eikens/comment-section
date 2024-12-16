@@ -3,36 +3,28 @@ import { CurrentUser } from "./CommentsPage";
 
 export interface CommentFormProps {
   currentUser: CurrentUser | null;
-  addComment: (newComment: string) => void;
   submitLabel: string;
-  /* newComment: string;
-  setNewComment: React.Dispatch<SetStateAction<string>>; */
+  newComment: string;
+  setNewComment: React.Dispatch<SetStateAction<string>>;
+  onSubmit: any;
 }
 
 const CommentForm = ({
   currentUser,
-  addComment,
   submitLabel,
+  newComment,
+  setNewComment,
+  onSubmit,
 }: CommentFormProps) => {
-  const [newComment, setNewComment] = useState("");
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
-  };
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    if (newComment.trim() === "") return; /* prevent submitting empty comment */
-
-    addComment(newComment);
-    setNewComment("");
   };
 
   return (
     <>
       <form
         className="comment-form rounded-md bg-white p-5"
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
       >
         <div className="flex items-center md:items-start">
           <img

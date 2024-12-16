@@ -22,6 +22,7 @@ const CommentsPage = () => {
   const [score, setScore] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const [newComment, setNewComment] = useState("");
 
   let idCounter = comments.length;
   const generateId = () => idCounter++;
@@ -98,6 +99,14 @@ const CommentsPage = () => {
     setComments((prevComments) => [...prevComments, addedComment]);
   };
 
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    if (newComment.trim() === "") return; /* prevent submitting empty comment */
+
+    addComment(newComment);
+    setNewComment("");
+  };
+
   const handleReply = () => {};
 
   return (
@@ -129,7 +138,9 @@ const CommentsPage = () => {
         ))}
         <CommentForm
           currentUser={currentUser}
-          addComment={addComment}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          onSubmit={handleSubmit}
           submitLabel="SEND"
         />
       </div>
