@@ -40,7 +40,7 @@ body {
     "comment comment"
     "update update"
     "voting interact";
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 95px 1fr;
 }
 
 .voting {
@@ -53,6 +53,10 @@ body {
 
 .date {
   grid-area: user;
+}
+
+.edit {
+  grid-area: interact;
 }
 
 .reply {

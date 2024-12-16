@@ -19,13 +19,14 @@ const CommentsPage = () => {
     [],
   ); /* initialized to empty array */
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [score, setScore] = useState(comment.score);
+  const [score, setScore] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedComment, setEditedComment] = useState(
-    comment.replyingTo
-      ? `@${comment.replyingTo} ${comment.content}`
-      : comment.content,
-  );
+  const [isReplying, setIsReplying] = useState(false);
+
+  const [newComment, setNewComment] = useState("");
+
+  let idCounter = comments.length;
+  const generateId = () => idCounter++;
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -85,7 +86,21 @@ const CommentsPage = () => {
     setComments(updatedComments);
   };
 
-  const addComment = () => {};
+  const addComment = (newComment: string) => {
+    if (!currentUser) return;
+    const addedComment: Comment = {
+      id: generateId(),
+      content: newComment,
+      createdAt: new Date().toISOString(),
+      score: 0,
+      user: currentUser,
+      replies: [],
+    };
+
+    setComments((prevComments) => [...prevComments, addedComment]);
+  };
+
+  const handleReply = () => {};
 
   return (
     <>
@@ -95,14 +110,14 @@ const CommentsPage = () => {
           <Comment
             key={comment.id}
             comment={comment}
+            currentUser={currentUser}
             score={comment.score}
             setScore={setScore}
-            currentUser={currentUser}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            isReplying={isReplying}
+            setIsReplying={setIsReplying}
             deleteComment={deleteComment}
-            editedComment={editedComment}
-            setEditedComment={setEditedComment}
             editComment={
               (id: number, newContent: string) =>
                 setComments(
@@ -111,9 +126,17 @@ const CommentsPage = () => {
                   ) => editComment(prevComments, id, newContent),
                 ) /* calling setComments is necessary because editComment alone doesn't update comments variable */
             } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
+            onReply={handleReply}
           />
         ))}
-        <CommentForm currentUser={currentUser} handleSubmit={addComment} />
+        <CommentForm
+          currentUser={currentUser}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          addComment={addComment}
+          isReplying={isReplying}
+          setIsReplying={setIsReplying}
+        />
       </div>
     </>
   );

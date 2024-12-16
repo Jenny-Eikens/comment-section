@@ -1,5 +1,7 @@
 import React, { useState, useRef, SetStateAction } from "react";
 import { CurrentUser } from "./CommentsPage";
+import CommentForm from "./CommentForm";
+import { CommentFormProps } from "./CommentForm";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -61,31 +63,39 @@ interface Comment {
 
 interface CommentProps {
   comment: Comment;
-  score: number;
-  setScore: React.Dispatch<SetStateAction<number>>;
   currentUser: CurrentUser | null;
+  score: number;
+  setScore: React.Dispatch<SetStateAction<number | null>>;
   isEditing: boolean;
   setIsEditing: React.Dispatch<SetStateAction<boolean>>;
+  isReplying: boolean;
+  setIsReplying: React.Dispatch<SetStateAction<boolean>>;
   deleteComment: (id: number) => void;
-  editedComment: string;
-  setEditedComment: React.Dispatch<SetStateAction<string>>;
   editComment: (id: number, newContent: string) => void;
+  onReply: any;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
 }
 
 const Comment = ({
   comment,
+  currentUser,
   score,
   setScore,
-  currentUser,
   isEditing,
   setIsEditing,
+  isReplying,
+  setIsReplying,
   deleteComment,
-  editedComment,
-  setEditedComment,
   editComment,
+  onReply,
 }: CommentProps) => {
+  const [editedComment, setEditedComment] = useState(
+    comment.replyingTo
+      ? `@${comment.replyingTo} ${comment.content}`
+      : comment.content,
+  );
+
   const dialogRef =
     useRef<HTMLDialogElement>(
       null,
@@ -134,7 +144,7 @@ const Comment = ({
         key={comment.id}
       >
         {/* Voting */}
-        <div className="voting flex w-[80%] flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[90%] md:w-auto md:flex-col md:space-y-2 md:py-3">
+        <div className="voting flex flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[6rem] md:w-auto md:flex-col md:py-3">
           <button
             className="p-1"
             onClick={() => handleClickPlus()}
@@ -174,7 +184,7 @@ const Comment = ({
         </div>
 
         {isUser ? (
-          <div className="interactive flex space-x-4">
+          <div className="edit flex justify-end space-x-4">
             {/* Delete button */}
             <button
               className="flex items-center space-x-2"
@@ -194,7 +204,10 @@ const Comment = ({
           </div>
         ) : (
           /* Reply button */
-          <button className="reply flex items-center justify-end space-x-2">
+          <button
+            className="reply flex items-center justify-end space-x-2"
+            onClick={onReply}
+          >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>
         )}
@@ -228,21 +241,33 @@ const Comment = ({
         )}
       </div>
 
+      {isReplying && (
+        <CommentForm
+          currentUser={currentUser}
+          newComment=""
+          setNewComment={setNewComment}
+          addComment={addComment}
+          isReplying={isReplying}
+          setIsReplying={setIsReplying}
+        />
+      )}
+
       {comment.replies?.length > 0 && (
         <div className="replies ml-4 space-y-4 md:ml-[4rem]">
           {comment.replies.map((reply: Comment) => (
             <Comment
               key={reply.id}
               comment={reply}
-              score={comment.score}
-              setScore={setScore}
               currentUser={currentUser}
+              score={reply.score}
+              setScore={setScore}
               isEditing={isEditing}
               setIsEditing={setIsEditing}
+              isReplying={isReplying}
+              setIsReplying={setIsReplying}
               deleteComment={deleteComment}
-              editedComment={editedComment}
-              setEditedComment={setEditedComment}
               editComment={editComment}
+              onReply={onReply}
             />
           ))}
         </div>
