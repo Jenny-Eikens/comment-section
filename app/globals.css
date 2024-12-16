@@ -67,6 +67,27 @@ body {
   grid-area: update;
 }
 
+.new-comment {
+  grid-area: new-comment;
+}
+
+.current-user {
+  grid-area: current-user;
+}
+
+.submit-button {
+  grid-area: submit-button;
+}
+
+.comment-form {
+  display: grid;
+  gap: 1rem;
+  grid-template-areas:
+    "new-comment new-comment"
+    "current-user submit-button";
+  grid-template-columns: 65% 1fr;
+}
+
 @media (min-width: 768px) {
   .comment-container {
     grid-template-areas:
@@ -75,5 +96,12 @@ body {
       "voting comment comment comment"
       ". . . update";
     grid-template-columns: 45px 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .comment-form {
+    grid-template-areas: "current-user new-comment submit-button";
+    grid-template-columns: 5% 1fr 15%;
   }
 }

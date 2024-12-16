@@ -19,6 +19,13 @@ const CommentsPage = () => {
     [],
   ); /* initialized to empty array */
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [score, setScore] = useState(comment.score);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedComment, setEditedComment] = useState(
+    comment.replyingTo
+      ? `@${comment.replyingTo} ${comment.content}`
+      : comment.content,
+  );
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -78,6 +85,8 @@ const CommentsPage = () => {
     setComments(updatedComments);
   };
 
+  const addComment = () => {};
+
   return (
     <>
       <div className="content-wrapper w-[90vw] max-w-[700px] space-y-4">
@@ -86,8 +95,14 @@ const CommentsPage = () => {
           <Comment
             key={comment.id}
             comment={comment}
+            score={comment.score}
+            setScore={setScore}
             currentUser={currentUser}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
             deleteComment={deleteComment}
+            editedComment={editedComment}
+            setEditedComment={setEditedComment}
             editComment={
               (id: number, newContent: string) =>
                 setComments(
@@ -98,7 +113,7 @@ const CommentsPage = () => {
             } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
           />
         ))}
-        <CommentForm />
+        <CommentForm currentUser={currentUser} handleSubmit={addComment} />
       </div>
     </>
   );
