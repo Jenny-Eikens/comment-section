@@ -1,23 +1,21 @@
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useState } from "react";
 import { CurrentUser } from "./CommentsPage";
 
 export interface CommentFormProps {
   currentUser: CurrentUser | null;
-  newComment: string;
-  setNewComment: React.Dispatch<SetStateAction<string>>;
   addComment: (newComment: string) => void;
-  isReplying: boolean;
-  setIsReplying: React.Dispatch<SetStateAction<boolean>>;
+  submitLabel: string;
+  /* newComment: string;
+  setNewComment: React.Dispatch<SetStateAction<string>>; */
 }
 
 const CommentForm = ({
   currentUser,
-  newComment,
-  setNewComment,
   addComment,
-  isReplying,
-  setIsReplying,
+  submitLabel,
 }: CommentFormProps) => {
+  const [newComment, setNewComment] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
   };
@@ -53,7 +51,7 @@ const CommentForm = ({
           type="submit"
           className="submit-button md:px-auto rounded-lg bg-mod-blue p-3 font-[500] text-white md:h-[3rem]"
         >
-          {isReplying ? "REPLY" : "SEND"}
+          {submitLabel}
         </button>
       </form>
     </>

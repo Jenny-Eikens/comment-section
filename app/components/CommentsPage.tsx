@@ -23,8 +23,6 @@ const CommentsPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
 
-  const [newComment, setNewComment] = useState("");
-
   let idCounter = comments.length;
   const generateId = () => idCounter++;
 
@@ -131,11 +129,8 @@ const CommentsPage = () => {
         ))}
         <CommentForm
           currentUser={currentUser}
-          newComment={newComment}
-          setNewComment={setNewComment}
           addComment={addComment}
-          isReplying={isReplying}
-          setIsReplying={setIsReplying}
+          submitLabel="SEND"
         />
       </div>
     </>

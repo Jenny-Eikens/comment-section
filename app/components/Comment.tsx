@@ -72,9 +72,9 @@ interface CommentProps {
   setIsReplying: React.Dispatch<SetStateAction<boolean>>;
   deleteComment: (id: number) => void;
   editComment: (id: number, newContent: string) => void;
-  onReply: any;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
+  onReply: any;
 }
 
 const Comment = ({
@@ -206,7 +206,10 @@ const Comment = ({
           /* Reply button */
           <button
             className="reply flex items-center justify-end space-x-2"
-            onClick={onReply}
+            onClick={() => {
+              setIsReplying(true);
+              onReply;
+            }}
           >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>
@@ -244,11 +247,8 @@ const Comment = ({
       {isReplying && (
         <CommentForm
           currentUser={currentUser}
-          newComment=""
-          setNewComment={setNewComment}
           addComment={addComment}
-          isReplying={isReplying}
-          setIsReplying={setIsReplying}
+          submitLabel="REPLY"
         />
       )}
 
