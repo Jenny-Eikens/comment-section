@@ -86,6 +86,27 @@ const CommentsPage = () => {
     setComments(updatedComments);
   };
 
+  const addReply = (parentId: number, newComment: string) => {
+    if (!currentUser) return;
+    const addedReply: Comment = {
+      id: generateId(),
+      content: newComment,
+      createdAt: new Date().toISOString(),
+      score: 0,
+      replyingTo: "sdkfj",
+      user: currentUser,
+      replies: [],
+    };
+
+    setComments((prevComments) =>
+      prevComments.map((comment: Comment) =>
+        comment.id === parentId
+          ? { ...comment, replies: [...comment.replies, addedReply] }
+          : comment,
+      ),
+    );
+  };
+
   const addComment = (newComment: string) => {
     if (!currentUser) return;
     const addedComment: Comment = {
@@ -100,15 +121,23 @@ const CommentsPage = () => {
     setComments((prevComments) => [...prevComments, addedComment]);
   };
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleAddReply =
+    (parentId: number) => (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (newComment.trim() === "")
+        return; /* prevent submitting empty comment */
+
+      addReply(parentId, newComment);
+      setNewComment("");
+    };
+
+  const handleAddComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (newComment.trim() === "") return; /* prevent submitting empty comment */
 
     addComment(newComment);
     setNewComment("");
   };
-
-  const handleReply = () => {};
 
   return (
     <>
@@ -136,15 +165,14 @@ const CommentsPage = () => {
             } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
             newComment={newComment}
             setNewComment={setNewComment}
-            handleSubmit={handleSubmit}
-            onReply={handleReply}
+            handleSubmit={handleAddReply(comment.id)}
           />
         ))}
         <CommentForm
           currentUser={currentUser}
           newComment={newComment}
           setNewComment={setNewComment}
-          onSubmit={handleSubmit}
+          onSubmit={handleAddComment}
           submitLabel="SEND"
         />
       </div>

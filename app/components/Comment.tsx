@@ -58,7 +58,7 @@ interface Comment {
     image: { png: string; webp: string };
     username: string;
   };
-  replies?: Comment[];
+  replies: Comment[];
 }
 
 interface CommentProps {
@@ -77,7 +77,6 @@ interface CommentProps {
   newComment: string;
   setNewComment: React.Dispatch<React.SetStateAction<string>>;
   handleSubmit: React.FormEventHandler<HTMLFormElement>;
-  onReply: any;
 }
 
 const Comment = ({
@@ -94,7 +93,6 @@ const Comment = ({
   newComment,
   setNewComment,
   handleSubmit,
-  onReply,
 }: CommentProps) => {
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo
@@ -212,10 +210,7 @@ const Comment = ({
           /* Reply button */
           <button
             className="reply flex items-center justify-end space-x-2"
-            onClick={() => {
-              setIsReplying(true);
-              onReply;
-            }}
+            onClick={() => setIsReplying(true)}
           >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>
@@ -278,7 +273,6 @@ const Comment = ({
               newComment={newComment}
               setNewComment={setNewComment}
               handleSubmit={handleSubmit}
-              onReply={onReply}
             />
           ))}
         </div>
