@@ -1,7 +1,7 @@
 import React, { useState, useRef, SetStateAction } from "react";
 import { CurrentUser } from "./CommentsPage";
 import CommentForm from "./CommentForm";
-import { CommentFormProps } from "./CommentForm";
+import { ActiveComment } from "./CommentsPage";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -64,12 +64,10 @@ interface Comment {
 interface CommentProps {
   comment: Comment;
   currentUser: CurrentUser | null;
+  activeComment: ActiveComment | null;
+  setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
   score: number;
   setScore: React.Dispatch<SetStateAction<number | null>>;
-  isEditing: boolean;
-  setIsEditing: React.Dispatch<SetStateAction<boolean>>;
-  isReplying: boolean;
-  setIsReplying: React.Dispatch<SetStateAction<boolean>>;
   deleteComment: (id: number) => void;
   editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
@@ -82,12 +80,10 @@ interface CommentProps {
 const Comment = ({
   comment,
   currentUser,
+  activeComment,
+  setActiveComment,
   score,
   setScore,
-  isEditing,
-  setIsEditing,
-  isReplying,
-  setIsReplying,
   deleteComment,
   editComment,
   newComment,
@@ -100,12 +96,20 @@ const Comment = ({
       : comment.content,
   );
 
+  const isEditing =
+    activeComment &&
+    activeComment.id === comment.id &&
+    activeComment.type === "editing";
+  const isReplying =
+    activeComment &&
+    activeComment.id === comment.id &&
+    activeComment.type === "replying";
+
   const dialogRef =
     useRef<HTMLDialogElement>(
       null,
     ); /* ref allows for direct interaction with DOM element / React component without use of state */
 
-  let update = "Update";
   const isUser = comment.user.username === currentUser?.username;
   const handleClickPlus = () => {
     setScore(score + 1);
@@ -123,7 +127,7 @@ const Comment = ({
     if (editedComment.trim() !== "") {
       /* trim() removes whitespace from both ends of a string */
       editComment(comment.id, editedComment);
-      setIsEditing(false);
+      setActiveComment(null);
     } else {
       alert("Comment cannot be empty.");
     }
@@ -201,7 +205,9 @@ const Comment = ({
             {/* Edit button */}
             <button
               className="flex items-center space-x-2"
-              onClick={() => setIsEditing(true)}
+              onClick={() =>
+                setActiveComment({ type: "editing", id: comment.id })
+              }
             >
               {iconEdit} <span className="font-bold text-mod-blue">Edit</span>
             </button>
@@ -210,7 +216,9 @@ const Comment = ({
           /* Reply button */
           <button
             className="reply flex items-center justify-end space-x-2"
-            onClick={() => setIsReplying(true)}
+            onClick={() =>
+              setActiveComment({ type: "replying", id: comment.id })
+            }
           >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>
@@ -227,7 +235,7 @@ const Comment = ({
               className="update md:px-auto ml-auto rounded-md bg-mod-blue p-2 px-3 font-[500] text-white md:w-[70%]"
               onClick={handleEdit}
             >
-              {update.toUpperCase()}{" "}
+              UPDATE
             </button>
           </>
         ) : (
@@ -262,12 +270,10 @@ const Comment = ({
               key={reply.id}
               comment={reply}
               currentUser={currentUser}
+              activeComment={activeComment}
+              setActiveComment={setActiveComment}
               score={reply.score}
               setScore={setScore}
-              isEditing={isEditing}
-              setIsEditing={setIsEditing}
-              isReplying={isReplying}
-              setIsReplying={setIsReplying}
               deleteComment={deleteComment}
               editComment={editComment}
               newComment={newComment}

@@ -14,19 +14,24 @@ export interface CurrentUser {
   image: { png: string; webp: string };
   username: string;
 }
+export interface ActiveComment {
+  type: string;
+  id: number;
+}
 
 const CommentsPage = () => {
   const [comments, setComments] = useState<Comment[]>(
     [],
   ); /* initialized to empty array */
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [activeComment, setActiveComment] = useState<ActiveComment | null>(
+    null,
+  );
   const [score, setScore] = useState<number | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isReplying, setIsReplying] = useState(false);
   const [newComment, setNewComment] = useState("");
 
   let idCounter = comments.length;
-  const generateId = () => idCounter++;
+  const generateId = () => ++idCounter;
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -87,13 +92,19 @@ const CommentsPage = () => {
   };
 
   const addReply = (parentId: number, newComment: string) => {
+    const replyTo = (parentId: number) => {
+      const replyComment = comments.find((comment) => comment.id === parentId);
+      console.log("replyComment", replyComment?.user.username);
+      return replyComment?.user.username;
+    };
+
     if (!currentUser) return;
     const addedReply: Comment = {
       id: generateId(),
       content: newComment,
       createdAt: new Date().toISOString(),
       score: 0,
-      replyingTo: "sdkfj",
+      replyingTo: replyTo(parentId),
       user: currentUser,
       replies: [],
     };
@@ -129,6 +140,7 @@ const CommentsPage = () => {
 
       addReply(parentId, newComment);
       setNewComment("");
+      setActiveComment(null);
     };
 
   const handleAddComment: React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -148,12 +160,10 @@ const CommentsPage = () => {
             key={comment.id}
             comment={comment}
             currentUser={currentUser}
+            activeComment={activeComment}
+            setActiveComment={setActiveComment}
             score={comment.score}
             setScore={setScore}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            isReplying={isReplying}
-            setIsReplying={setIsReplying}
             deleteComment={deleteComment}
             editComment={
               (id: number, newContent: string) =>

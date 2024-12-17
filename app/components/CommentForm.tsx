@@ -1,7 +1,7 @@
 import React, { SetStateAction, useState } from "react";
 import { CurrentUser } from "./CommentsPage";
 
-export interface CommentFormProps {
+interface CommentFormProps {
   currentUser: CurrentUser | null;
   submitLabel: string;
   newComment: string;
