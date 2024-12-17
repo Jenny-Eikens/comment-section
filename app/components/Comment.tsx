@@ -133,6 +133,19 @@ const Comment = ({
     }
   };
 
+  const handleEditing = () => {
+    if (isEditing) {
+      setEditedComment(
+        comment.replyingTo
+          ? `@${comment.replyingTo} ${comment.content}`
+          : comment.content,
+      );
+      setActiveComment(null);
+    } else {
+      setActiveComment({ type: "editing", id: comment.id });
+    }
+  };
+
   const handleOpenModal = () => {
     if (dialogRef.current) {
       dialogRef.current.showModal(); /* ref.current accesses element and allows calling of its methods */
@@ -205,11 +218,12 @@ const Comment = ({
             {/* Edit button */}
             <button
               className="flex items-center space-x-2"
-              onClick={() =>
-                setActiveComment({ type: "editing", id: comment.id })
-              }
+              onClick={handleEditing}
             >
-              {iconEdit} <span className="font-bold text-mod-blue">Edit</span>
+              {iconEdit}{" "}
+              <span className="font-bold text-mod-blue">
+                {isEditing ? "Cancel" : "Edit"}
+              </span>
             </button>
           </div>
         ) : (
@@ -261,27 +275,6 @@ const Comment = ({
           onSubmit={handleSubmit}
           submitLabel="REPLY"
         />
-      )}
-
-      {comment.replies?.length > 0 && (
-        <div className="replies ml-4 space-y-4 md:ml-[4rem]">
-          {comment.replies.map((reply: Comment) => (
-            <Comment
-              key={reply.id}
-              comment={reply}
-              currentUser={currentUser}
-              activeComment={activeComment}
-              setActiveComment={setActiveComment}
-              score={reply.score}
-              setScore={setScore}
-              deleteComment={deleteComment}
-              editComment={editComment}
-              newComment={newComment}
-              setNewComment={setNewComment}
-              handleSubmit={handleSubmit}
-            />
-          ))}
-        </div>
       )}
 
       {/* Modal */}

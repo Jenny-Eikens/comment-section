@@ -30,8 +30,7 @@ const CommentsPage = () => {
   const [score, setScore] = useState<number | null>(null);
   const [newComment, setNewComment] = useState("");
 
-  let idCounter = comments.length;
-  const generateId = () => ++idCounter;
+  const generateId = () => Date.now() + Math.random();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -62,13 +61,12 @@ const CommentsPage = () => {
         };
       }
       if (comment.replies && comment.replies.length > 0) {
-        return {
-          ...comment,
-          replies: editComment(comment.replies, id, newContent),
-          /* recursion, function gets called on replies array instead of comments array */
-          /* comments now refers to comment.replies */
-        };
+        const updatedReplies = comment.replies.map((reply) =>
+          reply.id === id ? { ...reply, content: newContent } : reply,
+        );
+        return { ...comment, replies: updatedReplies };
       }
+
       return comment;
     });
   }; /* not setting the comments' state directly in this function keeps it reusable and not tied to specific state */
@@ -92,19 +90,32 @@ const CommentsPage = () => {
   };
 
   const addReply = (parentId: number, newComment: string) => {
-    const replyTo = (parentId: number) => {
-      const replyComment = comments.find((comment) => comment.id === parentId);
-      console.log("replyComment", replyComment?.user.username);
-      return replyComment?.user.username;
+    const replyTo = (
+      comments: Comment[],
+      parentId: number,
+    ): string | undefined => {
+      for (const comment of comments) {
+        if (comment.id === parentId) {
+          console.log("Username:", comment.user.username);
+          return comment.user.username;
+        }
+        if (comment.replies && comment.replies.length > 0) {
+          const foundInReplies = replyTo(comment.replies, parentId);
+          if (foundInReplies) {
+            console.log("Found in replies:", foundInReplies);
+            return foundInReplies;
+          }
+        }
+      }
+      return undefined;
     };
-
     if (!currentUser) return;
     const addedReply: Comment = {
       id: generateId(),
       content: newComment,
       createdAt: new Date().toISOString(),
       score: 0,
-      replyingTo: replyTo(parentId),
+      replyingTo: replyTo(comments, parentId),
       user: currentUser,
       replies: [],
     };
@@ -151,32 +162,50 @@ const CommentsPage = () => {
     setNewComment("");
   };
 
+  const handleEditComment = (id: number, newContent: string) => {
+    setComments((prevComments) => editComment(prevComments, id, newContent));
+  };
+
   return (
     <>
       <div className="content-wrapper w-[90vw] max-w-[700px] space-y-4">
         <div>Comments</div>
         {comments.map((comment: Comment) => (
-          <Comment
-            key={comment.id}
-            comment={comment}
-            currentUser={currentUser}
-            activeComment={activeComment}
-            setActiveComment={setActiveComment}
-            score={comment.score}
-            setScore={setScore}
-            deleteComment={deleteComment}
-            editComment={
-              (id: number, newContent: string) =>
-                setComments(
-                  (
-                    prevComments /* prevComments represents current state value, name could be anything */,
-                  ) => editComment(prevComments, id, newContent),
-                ) /* calling setComments is necessary because editComment alone doesn't update comments variable */
-            } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
-            newComment={newComment}
-            setNewComment={setNewComment}
-            handleSubmit={handleAddReply(comment.id)}
-          />
+          <div key={comment.id} className="space-y-4">
+            <Comment
+              key={comment.id}
+              comment={comment}
+              currentUser={currentUser}
+              activeComment={activeComment}
+              setActiveComment={setActiveComment}
+              score={comment.score}
+              setScore={setScore}
+              deleteComment={deleteComment}
+              editComment={handleEditComment}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleSubmit={handleAddReply(comment.id)}
+            />
+
+            {comment.replies?.map((reply: Comment) => (
+              <div className="replies ml-4 space-y-4 md:ml-[4rem]">
+                <Comment
+                  key={reply.id}
+                  comment={reply}
+                  currentUser={currentUser}
+                  activeComment={activeComment}
+                  setActiveComment={setActiveComment}
+                  score={reply.score}
+                  setScore={setScore}
+                  deleteComment={deleteComment}
+                  editComment={handleEditComment}
+                  newComment={newComment}
+                  setNewComment={setNewComment}
+                  handleSubmit={handleAddReply(reply.id)}
+                />
+              </div>
+            ))}
+          </div>
         ))}
         <CommentForm
           currentUser={currentUser}
