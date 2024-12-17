@@ -5,6 +5,7 @@ import CommentForm from "./CommentForm";
 
 {
   /* TO-DO:
+  - figure out how to handle submission of new comment / new reply
   - figure out how to update data.json (send changed data to backend)
 */
 }
@@ -133,6 +134,9 @@ const CommentsPage = () => {
                   ) => editComment(prevComments, id, newContent),
                 ) /* calling setComments is necessary because editComment alone doesn't update comments variable */
             } /* only passing editComment={editComment} wouldn't allow child component access to setComments or parent's state */
+            newComment={newComment}
+            setNewComment={setNewComment}
+            handleSubmit={handleSubmit}
             onReply={handleReply}
           />
         ))}

@@ -74,6 +74,9 @@ interface CommentProps {
   editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
+  newComment: string;
+  setNewComment: React.Dispatch<React.SetStateAction<string>>;
+  handleSubmit: React.FormEventHandler<HTMLFormElement>;
   onReply: any;
 }
 
@@ -88,6 +91,9 @@ const Comment = ({
   setIsReplying,
   deleteComment,
   editComment,
+  newComment,
+  setNewComment,
+  handleSubmit,
   onReply,
 }: CommentProps) => {
   const [editedComment, setEditedComment] = useState(
@@ -247,7 +253,9 @@ const Comment = ({
       {isReplying && (
         <CommentForm
           currentUser={currentUser}
-          addComment={addComment}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          onSubmit={handleSubmit}
           submitLabel="REPLY"
         />
       )}
@@ -267,6 +275,9 @@ const Comment = ({
               setIsReplying={setIsReplying}
               deleteComment={deleteComment}
               editComment={editComment}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleSubmit={handleSubmit}
               onReply={onReply}
             />
           ))}
