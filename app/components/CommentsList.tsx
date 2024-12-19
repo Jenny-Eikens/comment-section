@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import Comment from "./Comment";
 import { CommentProps } from "./Comment";
 import CommentForm from "./CommentForm";
@@ -19,13 +21,21 @@ export interface CommentsListProps {
   currentUser: CurrentUser | null;
 }
 
+dayjs.extend(relativeTime);
+
+export const getRelativeTime = (dateString: string) => {
+  return dayjs(dateString).fromNow();
+};
+
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const [commentsList, setCommentsList] = useState(comments);
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
-  const [score, setScore] = useState<number | null>(null);
   const [newComment, setNewComment] = useState("");
+  const [relativeTime, setRelativeTime] = useState(
+    getRelativeTime(Date.now().toString()),
+  );
 
   const generateId = () => Date.now() + Math.random();
 
@@ -106,23 +116,39 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   const addReply = (parentId: number, newComment: string) => {
     if (!currentUser) return;
+
     const addedReply: CommentProps = {
       id: generateId(),
       content: newComment,
-      createdAt: new Date().toISOString(),
+      createdAt: getRelativeTime(new Date().toISOString()),
       score: 0,
       replyingTo: replyingTo(commentsList, parentId),
       user: currentUser,
       replies: [],
     };
 
-    setCommentsList((prevComments) =>
-      prevComments.map((comment: CommentProps) =>
-        comment.id === parentId
-          ? { ...comment, replies: [...comment.replies, addedReply] }
-          : comment,
-      ),
-    );
+    const updateReplies = (commentsList: CommentProps[]): CommentProps[] => {
+      return commentsList.map((comment) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies: [...comment.replies, addedReply],
+          };
+        } else if (comment.replies && comment.replies.length > 0) {
+          return {
+            ...comment,
+            replies: updateReplies(comment.replies),
+          }; /* recursion */
+        }
+        return comment;
+      });
+    };
+
+    setCommentsList((prevComments) => {
+      const updatedComments = updateReplies(prevComments);
+      console.log("Updated commentsList:", updatedComments);
+      return updatedComments;
+    });
   };
 
   const handleAddReply =
@@ -143,7 +169,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     const addedComment: CommentProps = {
       id: generateId(),
       content: newComment,
-      createdAt: new Date().toISOString(),
+      createdAt: getRelativeTime(new Date().toISOString()),
       score: 0,
       user: currentUser,
       replies: [],
@@ -170,10 +196,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               key={comment.id}
               comment={comment}
               currentUser={currentUser}
+              relativeTime={relativeTime}
+              setRelativeTime={setRelativeTime}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
-              score={comment.score}
-              setScore={setScore}
               deleteComment={deleteComment}
               editComment={handleEditComment}
               newComment={newComment}
@@ -190,10 +216,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                   key={reply.id}
                   comment={reply}
                   currentUser={currentUser}
+                  relativeTime={relativeTime}
+                  setRelativeTime={setRelativeTime}
                   activeComment={activeComment}
                   setActiveComment={setActiveComment}
-                  score={reply.score}
-                  setScore={setScore}
                   deleteComment={deleteComment}
                   editComment={handleEditComment}
                   newComment={newComment}

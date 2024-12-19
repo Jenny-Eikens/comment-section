@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useRef, SetStateAction } from "react";
+import React, { useState, useRef, SetStateAction, useEffect } from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 import CommentForm from "./CommentForm";
+import { getRelativeTime } from "./CommentsList";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -49,6 +52,8 @@ const iconReply = (
   </svg>
 );
 
+dayjs.extend(relativeTime);
+
 export interface CommentProps {
   id: number;
   content: string;
@@ -65,10 +70,10 @@ export interface CommentProps {
 export interface CommentComponentProps {
   comment: CommentProps;
   currentUser: CurrentUser | null;
+  relativeTime: string;
+  setRelativeTime: React.Dispatch<React.SetStateAction<string>>;
   activeComment: ActiveComment | null;
   setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
-  score: number;
-  setScore: React.Dispatch<SetStateAction<number | null>>;
   deleteComment: (id: number) => void;
   editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
@@ -81,10 +86,10 @@ export interface CommentComponentProps {
 const Comment = ({
   comment,
   currentUser,
+  relativeTime,
+  setRelativeTime,
   activeComment,
   setActiveComment,
-  score,
-  setScore,
   deleteComment,
   editComment,
   newComment,
@@ -96,11 +101,21 @@ const Comment = ({
       ? `@${comment.replyingTo} ${comment.content}`
       : comment.content,
   );
+  const [score, setScore] = useState<number>(comment.score);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRelativeTime(getRelativeTime(comment.createdAt));
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [comment.createdAt]);
 
   const isEditing =
     activeComment &&
     activeComment.id === comment.id &&
     activeComment.type === "editing";
+
   const isReplying =
     activeComment &&
     activeComment.id === comment.id &&
@@ -112,6 +127,7 @@ const Comment = ({
     ); /* ref allows for direct interaction with DOM element / React component without use of state */
 
   const isUser = comment.user.username === currentUser?.username;
+
   const handleClickPlus = () => {
     setScore(score + 1);
   };
@@ -171,6 +187,7 @@ const Comment = ({
             className="p-1"
             onClick={() => handleClickPlus()}
             disabled={isUser}
+            aria-label="Plus one"
           >
             {iconPlus}
           </button>
@@ -179,6 +196,7 @@ const Comment = ({
             className="p-1"
             onClick={() => handleClickMinus()}
             disabled={isUser}
+            aria-label="Minus one"
           >
             {iconMinus}
           </button>
@@ -211,6 +229,7 @@ const Comment = ({
             <button
               className="flex items-center space-x-2"
               onClick={handleOpenModal}
+              aria-label="Delete comment"
             >
               {iconDelete}{" "}
               <span className="font-bold text-soft-red">Delete</span>
@@ -220,6 +239,7 @@ const Comment = ({
             <button
               className="flex items-center space-x-2"
               onClick={handleEditing}
+              aria-label={isEditing ? "Cancel" : "Edit comment"}
             >
               {iconEdit}{" "}
               <span className="font-bold text-mod-blue">
@@ -234,6 +254,7 @@ const Comment = ({
             onClick={() =>
               setActiveComment({ type: "replying", id: comment.id })
             }
+            aria-label="Reply"
           >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
           </button>
@@ -281,7 +302,7 @@ const Comment = ({
       {/* Modal */}
       <dialog ref={dialogRef} className="modal p-4 md:p-0">
         <div className="modal-box w-[100%] max-w-[400px] space-y-2 rounded-lg p-6 md:rounded-md md:p-8">
-          <h3 className="text-2xl font-[500]">Delete comment</h3>
+          <h2 className="text-2xl font-[500]">Delete comment</h2>
           <p className="py-4 text-gray-blue">
             Are you sure you want to delete this comment? This will remove the
             comment and can't be undone.

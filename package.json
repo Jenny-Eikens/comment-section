@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "dayjs": "^1.11.13",
+    "dayjs-ext": "^2.1.1",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

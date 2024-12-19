@@ -7,7 +7,14 @@ import CommentsList from "./CommentsList";
   - implement dark mode
   - add hover states
   - implement localStorage
-  - figure out separation of server-side and client-side rendering
+  - fix time stamp
+  - don't wrap button text in spans in Comment component
+
+  ISSUES:
+  - replying to replies doesn't work -> why isn't comment.replies iterable????
+  - comment.replyingTo gets inserted a second time when editing a comment
+  - setting relative time doesn't work when I only try to apply it to new comments/replies
+  
 */
 }
 
