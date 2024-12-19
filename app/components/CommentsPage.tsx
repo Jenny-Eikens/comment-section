@@ -5,8 +5,11 @@ import CommentForm from "./CommentForm";
 
 {
   /* TO-DO:
-  - figure out how to handle submission of new comment / new reply
   - figure out how to update data.json (send changed data to backend)
+  - implement dark mode
+  - add hover states
+  - implement localStorage
+  - figure out if whole app should be rendered client-side
 */
 }
 
@@ -47,6 +50,8 @@ const CommentsPage = () => {
     fetchComments();
   }, []);
 
+  /* EDITING */
+
   const editComment = (
     comments: Comment[],
     id: number,
@@ -71,6 +76,12 @@ const CommentsPage = () => {
     });
   }; /* not setting the comments' state directly in this function keeps it reusable and not tied to specific state */
 
+  const handleEditComment = (id: number, newContent: string) => {
+    setComments((prevComments) => editComment(prevComments, id, newContent));
+  };
+
+  /* DELETING */
+
   const deleteComment = (id: number): void => {
     const removeComment = (comments: Comment[]): Comment[] => {
       return comments
@@ -89,33 +100,37 @@ const CommentsPage = () => {
     setComments(updatedComments);
   };
 
-  const addReply = (parentId: number, newComment: string) => {
-    const replyTo = (
-      comments: Comment[],
-      parentId: number,
-    ): string | undefined => {
-      for (const comment of comments) {
-        if (comment.id === parentId) {
-          console.log("Username:", comment.user.username);
-          return comment.user.username;
-        }
-        if (comment.replies && comment.replies.length > 0) {
-          const foundInReplies = replyTo(comment.replies, parentId);
-          if (foundInReplies) {
-            console.log("Found in replies:", foundInReplies);
-            return foundInReplies;
-          }
+  /* REPLYING */
+
+  const replyingTo = (
+    comments: Comment[],
+    parentId: number,
+  ): string | undefined => {
+    for (const comment of comments) {
+      if (comment.id === parentId) {
+        return comment.user.username;
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        const foundInReplies = replyingTo(
+          comment.replies,
+          parentId,
+        ); /* recursion, comment of comments now refers to reply of replies */
+        if (foundInReplies) {
+          return foundInReplies;
         }
       }
-      return undefined;
-    };
+    }
+    return undefined;
+  };
+
+  const addReply = (parentId: number, newComment: string) => {
     if (!currentUser) return;
     const addedReply: Comment = {
       id: generateId(),
       content: newComment,
       createdAt: new Date().toISOString(),
       score: 0,
-      replyingTo: replyTo(comments, parentId),
+      replyingTo: replyingTo(comments, parentId),
       user: currentUser,
       replies: [],
     };
@@ -128,6 +143,19 @@ const CommentsPage = () => {
       ),
     );
   };
+
+  const handleAddReply =
+    (parentId: number) => (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (newComment.trim() === "")
+        return; /* prevent submitting empty comment */
+
+      addReply(parentId, newComment);
+      setNewComment("");
+      setActiveComment(null);
+    };
+
+  /* NEW COMMENT */
 
   const addComment = (newComment: string) => {
     if (!currentUser) return;
@@ -143,27 +171,12 @@ const CommentsPage = () => {
     setComments((prevComments) => [...prevComments, addedComment]);
   };
 
-  const handleAddReply =
-    (parentId: number) => (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (newComment.trim() === "")
-        return; /* prevent submitting empty comment */
-
-      addReply(parentId, newComment);
-      setNewComment("");
-      setActiveComment(null);
-    };
-
   const handleAddComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (newComment.trim() === "") return; /* prevent submitting empty comment */
 
     addComment(newComment);
     setNewComment("");
-  };
-
-  const handleEditComment = (id: number, newContent: string) => {
-    setComments((prevComments) => editComment(prevComments, id, newContent));
   };
 
   return (
