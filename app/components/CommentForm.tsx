@@ -1,5 +1,7 @@
-import React, { SetStateAction, useState } from "react";
-import { CurrentUser } from "./CommentsPage";
+"use client";
+
+import React, { SetStateAction } from "react";
+import { CurrentUser } from "./CommentsList";
 
 interface CommentFormProps {
   currentUser: CurrentUser | null;

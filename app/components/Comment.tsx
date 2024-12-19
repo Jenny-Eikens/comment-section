@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useState, useRef, SetStateAction } from "react";
-import { CurrentUser } from "./CommentsPage";
+import { CurrentUser, ActiveComment } from "./CommentsList";
 import CommentForm from "./CommentForm";
-import { ActiveComment } from "./CommentsPage";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +49,7 @@ const iconReply = (
   </svg>
 );
 
-interface Comment {
+export interface CommentProps {
   id: number;
   content: string;
   createdAt: string;
@@ -58,11 +59,11 @@ interface Comment {
     image: { png: string; webp: string };
     username: string;
   };
-  replies: Comment[];
+  replies: CommentProps[];
 }
 
-interface CommentProps {
-  comment: Comment;
+export interface CommentComponentProps {
+  comment: CommentProps;
   currentUser: CurrentUser | null;
   activeComment: ActiveComment | null;
   setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
@@ -89,7 +90,7 @@ const Comment = ({
   newComment,
   setNewComment,
   handleSubmit,
-}: CommentProps) => {
+}: CommentComponentProps) => {
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo
       ? `@${comment.replyingTo} ${comment.content}`
