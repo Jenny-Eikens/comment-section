@@ -4,7 +4,6 @@ import React, { useState, useRef, SetStateAction, useEffect } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { CurrentUser, ActiveComment } from "./CommentsList";
-import CommentForm from "./CommentForm";
 import { getRelativeTime } from "./CommentsList";
 
 const iconPlus = (
@@ -75,6 +74,7 @@ export interface CommentComponentProps {
   activeComment: ActiveComment | null;
   setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
   deleteComment: (id: number) => void;
+  handleReply: (commentId: number) => void;
   editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
@@ -90,6 +90,7 @@ const Comment = ({
   setRelativeTime,
   activeComment,
   setActiveComment,
+  handleReply,
   deleteComment,
   editComment,
   newComment,
@@ -115,11 +116,6 @@ const Comment = ({
     activeComment &&
     activeComment.id === comment.id &&
     activeComment.type === "editing";
-
-  const isReplying =
-    activeComment &&
-    activeComment.id === comment.id &&
-    activeComment.type === "replying";
 
   const dialogRef =
     useRef<HTMLDialogElement>(
@@ -251,9 +247,7 @@ const Comment = ({
           /* Reply button */
           <button
             className="reply flex items-center justify-end space-x-2"
-            onClick={() =>
-              setActiveComment({ type: "replying", id: comment.id })
-            }
+            onClick={() => handleReply(comment.id)}
             aria-label="Reply"
           >
             {iconReply} <span className="font-bold text-mod-blue">Reply</span>
@@ -288,16 +282,6 @@ const Comment = ({
           </div>
         )}
       </div>
-      {isReplying && (
-        <CommentForm
-          currentUser={currentUser}
-          initialValue=""
-          newComment={newComment}
-          setNewComment={setNewComment}
-          onSubmit={handleSubmit}
-          submitLabel="REPLY"
-        />
-      )}
 
       {/* Modal */}
       <dialog ref={dialogRef} className="modal p-4 md:p-0">

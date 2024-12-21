@@ -7,8 +7,6 @@ interface CommentFormProps {
   currentUser: CurrentUser | null;
   initialValue: string;
   submitLabel: string;
-  newComment: string;
-  setNewComment: React.Dispatch<SetStateAction<string>>;
   onSubmit: any;
 }
 
@@ -16,8 +14,6 @@ const CommentForm = ({
   currentUser,
   submitLabel,
   initialValue = "",
-  newComment,
-  setNewComment,
   onSubmit,
 }: CommentFormProps) => {
   const [commentText, setCommentText] = useState(initialValue);
@@ -28,7 +24,7 @@ const CommentForm = ({
     e.preventDefault();
     if (commentText.trim() === "") return;
     onSubmit(commentText);
-    setCommentText(""); // Clear the input after submission
+    setCommentText("");
   };
 
   return (

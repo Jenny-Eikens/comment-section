@@ -60,12 +60,24 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
             setRelativeTime={setRelativeTime}
             activeComment={activeComment}
             setActiveComment={setActiveComment}
+            handleReply={handleReply}
             deleteComment={deleteComment}
             editComment={handleEditComment}
             newComment={newComment}
             setNewComment={setNewComment}
-            handleSubmit={handleAddReply(reply.id)} // Pass a handler to add replies
+            handleSubmit={(e) => handleAddReply(reply.id, newComment)(e)} // Pass both parentId and text
           />
+          {/* Render the reply form for the active comment */}
+          {activeComment &&
+            activeComment.id === reply.id &&
+            activeComment.type === "replying" && (
+              <CommentForm
+                currentUser={currentUser}
+                initialValue=""
+                onSubmit={(text: string) => addReply(reply.id, text)} // Pass text directly
+                submitLabel="REPLY"
+              />
+            )}
           {/* Recursively render nested replies */}
           {reply.replies?.length > 0 && renderReplies(reply.replies)}
         </div>
@@ -127,6 +139,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* REPLYING */
 
+  const handleReply = (commentId: number) => {
+    setActiveComment({ type: "replying", id: commentId });
+  };
+
   const replyingTo = (
     commentsList: CommentProps[],
     parentId: number,
@@ -186,11 +202,12 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   };
 
   const handleAddReply =
-    (parentId: number) => (e: React.FormEvent<HTMLFormElement>) => {
+    (parentId: number, text: string) =>
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (newComment.trim() === "") return;
+      if (text.trim() === "") return;
 
-      addReply(parentId, newComment);
+      addReply(parentId, text);
       setNewComment("");
       setActiveComment(null);
     };
@@ -211,12 +228,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     setCommentsList((prevComments) => [...prevComments, addedComment]);
   };
 
-  const handleAddComment: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    if (newComment.trim() === "") return;
+  const handleAddComment = (text: string) => {
+    if (text.trim() === "") return;
 
-    addComment(newComment);
-    setNewComment("");
+    addComment(text); // Call addComment with the provided text
   };
 
   return (
@@ -233,12 +248,26 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               setRelativeTime={setRelativeTime}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
+              handleReply={handleReply}
               deleteComment={deleteComment}
               editComment={handleEditComment}
               newComment={newComment}
               setNewComment={setNewComment}
-              handleSubmit={handleAddReply(comment.id)}
+              handleSubmit={(e) => handleAddReply(comment.id, newComment)(e)} // Bind parentId and text
             />
+
+            {/* Conditionally render the reply form in the parent */}
+            {activeComment &&
+              activeComment.id === comment.id &&
+              activeComment.type === "replying" && (
+                <CommentForm
+                  currentUser={currentUser}
+                  initialValue=""
+                  onSubmit={(text: string) => handleAddReply(comment.id, text)} // For replies
+                  submitLabel="REPLY"
+                />
+              )}
+
             {/* Render top-level replies */}
             {comment.replies?.length > 0 && renderReplies(comment.replies)}
           </div>
@@ -246,8 +275,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
         <CommentForm
           currentUser={currentUser}
           initialValue=""
-          newComment={newComment}
-          setNewComment={setNewComment}
           onSubmit={handleAddComment}
           submitLabel="SEND"
         />
