@@ -1,10 +1,11 @@
 "use client";
 
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useState } from "react";
 import { CurrentUser } from "./CommentsList";
 
 interface CommentFormProps {
   currentUser: CurrentUser | null;
+  initialValue: string;
   submitLabel: string;
   newComment: string;
   setNewComment: React.Dispatch<SetStateAction<string>>;
@@ -14,19 +15,27 @@ interface CommentFormProps {
 const CommentForm = ({
   currentUser,
   submitLabel,
+  initialValue = "",
   newComment,
   setNewComment,
   onSubmit,
 }: CommentFormProps) => {
-  const handleNewComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNewComment(e.target.value);
+  const [commentText, setCommentText] = useState(initialValue);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (commentText.trim() === "") return;
+    onSubmit(commentText);
+    setCommentText(""); // Clear the input after submission
   };
 
   return (
     <>
       <form
         className="comment-form rounded-md bg-white p-5"
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       >
         <div className="flex items-center md:items-start">
           <img
@@ -36,10 +45,12 @@ const CommentForm = ({
           />
         </div>
         <textarea
-          placeholder="Add a comment..."
+          placeholder={
+            submitLabel === "SEND" ? "Add a comment..." : "Add a reply..."
+          }
           className="new-comment textarea textarea-bordered h-20 resize-none border border-light-gray"
-          onChange={handleNewComment}
-          value={newComment}
+          onChange={handleChange}
+          value={commentText}
         ></textarea>
         <button
           type="submit"

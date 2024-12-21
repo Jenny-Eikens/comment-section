@@ -291,6 +291,7 @@ const Comment = ({
       {isReplying && (
         <CommentForm
           currentUser={currentUser}
+          initialValue=""
           newComment={newComment}
           setNewComment={setNewComment}
           onSubmit={handleSubmit}

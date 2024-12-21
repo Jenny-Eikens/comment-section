@@ -41,7 +41,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
-  const [replyComment, setReplyComment] = useState("");
   const [newComment, setNewComment] = useState("");
   const [relativeTime, setRelativeTime] = useState(
     getRelativeTime(Date.now().toString()),
@@ -149,12 +148,12 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     return undefined;
   };
 
-  const addReply = (parentId: number, replyComment: string) => {
+  const addReply = (parentId: number, newComment: string) => {
     if (!currentUser) return;
 
     const addedReply: CommentProps = {
       id: generateId(),
-      content: replyComment,
+      content: newComment,
       createdAt: getRelativeTime(new Date().toISOString()),
       score: 0,
       replyingTo: replyingTo(commentsList, parentId),
@@ -191,8 +190,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       e.preventDefault();
       if (newComment.trim() === "") return;
 
-      addReply(parentId, replyComment);
-      setReplyComment("");
+      addReply(parentId, newComment);
+      setNewComment("");
       setActiveComment(null);
     };
 
@@ -246,6 +245,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
         ))}
         <CommentForm
           currentUser={currentUser}
+          initialValue=""
           newComment={newComment}
           setNewComment={setNewComment}
           onSubmit={handleAddComment}
