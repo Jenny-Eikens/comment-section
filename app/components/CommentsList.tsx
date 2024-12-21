@@ -28,16 +28,51 @@ export const getRelativeTime = (dateString: string) => {
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
-  const [commentsList, setCommentsList] = useState(comments);
+  /* make sure comments and replies always have a replies array */
+  const initializeComments = (comments: CommentProps[]): CommentProps[] => {
+    return comments.map((comment) => ({
+      ...comment,
+      replies: comment.replies ? initializeComments(comment.replies) : [],
+    }));
+  };
+  const [commentsList, setCommentsList] = useState(
+    initializeComments(comments),
+  );
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
+  const [replyComment, setReplyComment] = useState("");
   const [newComment, setNewComment] = useState("");
   const [relativeTime, setRelativeTime] = useState(
     getRelativeTime(Date.now().toString()),
   );
 
   const generateId = () => Date.now() + Math.random();
+
+  const renderReplies = (replies: CommentProps[]) => (
+    <div className="replies ml-4 space-y-4 md:ml-[4rem]">
+      {replies.map((reply) => (
+        <div key={reply.id} className="space-y-4">
+          <Comment
+            key={reply.id}
+            comment={reply}
+            currentUser={currentUser}
+            relativeTime={relativeTime}
+            setRelativeTime={setRelativeTime}
+            activeComment={activeComment}
+            setActiveComment={setActiveComment}
+            deleteComment={deleteComment}
+            editComment={handleEditComment}
+            newComment={newComment}
+            setNewComment={setNewComment}
+            handleSubmit={handleAddReply(reply.id)} // Pass a handler to add replies
+          />
+          {/* Recursively render nested replies */}
+          {reply.replies?.length > 0 && renderReplies(reply.replies)}
+        </div>
+      ))}
+    </div>
+  );
 
   /* EDITING */
 
@@ -114,12 +149,12 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     return undefined;
   };
 
-  const addReply = (parentId: number, newComment: string) => {
+  const addReply = (parentId: number, replyComment: string) => {
     if (!currentUser) return;
 
     const addedReply: CommentProps = {
       id: generateId(),
-      content: newComment,
+      content: replyComment,
       createdAt: getRelativeTime(new Date().toISOString()),
       score: 0,
       replyingTo: replyingTo(commentsList, parentId),
@@ -132,7 +167,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
         if (comment.id === parentId) {
           return {
             ...comment,
-            replies: [...comment.replies, addedReply],
+            replies: [...(comment.replies || []), addedReply],
           };
         } else if (comment.replies && comment.replies.length > 0) {
           return {
@@ -154,11 +189,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const handleAddReply =
     (parentId: number) => (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (newComment.trim() === "")
-        return; /* prevent submitting empty comment */
+      if (newComment.trim() === "") return;
 
-      addReply(parentId, newComment);
-      setNewComment("");
+      addReply(parentId, replyComment);
+      setReplyComment("");
       setActiveComment(null);
     };
 
@@ -180,7 +214,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   const handleAddComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    if (newComment.trim() === "") return; /* prevent submitting empty comment */
+    if (newComment.trim() === "") return;
 
     addComment(newComment);
     setNewComment("");
@@ -206,28 +240,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               setNewComment={setNewComment}
               handleSubmit={handleAddReply(comment.id)}
             />
-
-            {comment.replies?.map((reply: CommentProps) => (
-              <div
-                className="replies ml-4 space-y-4 md:ml-[4rem]"
-                key={reply.id}
-              >
-                <Comment
-                  key={reply.id}
-                  comment={reply}
-                  currentUser={currentUser}
-                  relativeTime={relativeTime}
-                  setRelativeTime={setRelativeTime}
-                  activeComment={activeComment}
-                  setActiveComment={setActiveComment}
-                  deleteComment={deleteComment}
-                  editComment={handleEditComment}
-                  newComment={newComment}
-                  setNewComment={setNewComment}
-                  handleSubmit={handleAddReply(reply.id)}
-                />
-              </div>
-            ))}
+            {/* Render top-level replies */}
+            {comment.replies?.length > 0 && renderReplies(comment.replies)}
           </div>
         ))}
         <CommentForm

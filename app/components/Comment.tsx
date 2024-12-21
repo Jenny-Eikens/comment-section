@@ -79,7 +79,7 @@ export interface CommentComponentProps {
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
   newComment: string;
-  setNewComment: React.Dispatch<React.SetStateAction<string>>;
+  setNewComment: React.Dispatch<SetStateAction<string>>;
   handleSubmit: React.FormEventHandler<HTMLFormElement>;
 }
 
@@ -288,7 +288,6 @@ const Comment = ({
           </div>
         )}
       </div>
-
       {isReplying && (
         <CommentForm
           currentUser={currentUser}

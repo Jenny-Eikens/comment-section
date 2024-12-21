@@ -9,9 +9,9 @@ import CommentsList from "./CommentsList";
   - implement localStorage
   - fix time stamp
   - don't wrap button text in spans in Comment component
+  - limit nesting level (replying to replies)
 
   ISSUES:
-  - replying to replies doesn't work -> why isn't comment.replies iterable????
   - comment.replyingTo gets inserted a second time when editing a comment
   - setting relative time doesn't work when I only try to apply it to new comments/replies
   

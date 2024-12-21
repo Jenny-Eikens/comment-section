@@ -18,7 +18,7 @@ const CommentForm = ({
   setNewComment,
   onSubmit,
 }: CommentFormProps) => {
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleNewComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
   };
 
@@ -38,7 +38,7 @@ const CommentForm = ({
         <textarea
           placeholder="Add a comment..."
           className="new-comment textarea textarea-bordered h-20 resize-none border border-light-gray"
-          onChange={handleChange}
+          onChange={handleNewComment}
           value={newComment}
         ></textarea>
         <button
