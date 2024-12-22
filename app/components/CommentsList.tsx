@@ -46,10 +46,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     getRelativeTime(Date.now().toString()),
   );
 
-  useEffect(() => {
-    console.log("commentsList updated:", commentsList);
-  }, [commentsList]);
-
   const generateId = () => Date.now() + Math.random();
 
   const renderReplies = (replies: CommentProps[]) => {
@@ -78,7 +74,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                 <CommentForm
                   currentUser={currentUser}
                   initialValue=""
-                  onSubmit={(text: string) => handleAddReply(reply.id, text)} // Pass text directly
+                  onSubmit={(text: string) => handleAddReply(reply.id, text)}
                   submitLabel="REPLY"
                 />
               )}
@@ -174,12 +170,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   };
 
   const addReply = (parentId: number, newComment: string) => {
-    console.log(
-      "addReply called with parentId:",
-      parentId,
-      "newComment:",
-      newComment,
-    );
     if (!currentUser) return;
 
     const addedReply: CommentProps = {
@@ -192,13 +182,9 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       replies: [],
     };
 
-    console.log("Adding reply:", addedReply);
-
     const updateReplies = (commentsList: CommentProps[]): CommentProps[] => {
-      console.log("updateReplies invoked with commentsList:", commentsList);
       return commentsList.map((comment) => {
         if (comment.id === parentId) {
-          console.log("Updating comment with ID:", comment.id);
           return {
             ...comment,
             replies: [...(comment.replies || []), addedReply],
@@ -214,30 +200,17 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     };
 
     setCommentsList((prevComments) => {
-      console.log("Previous commentsList:", prevComments);
       const updatedComments = updateReplies(prevComments);
-      console.log("Updated commentsList:", updatedComments);
       return updatedComments;
     });
     setActiveComment(null);
   };
 
   const handleAddReply = (parentId: number, text: string) => {
-    console.log("Received parentId:", parentId, "Text:", text);
-
-    return (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      console.log("handleAddReply invoked for parentId:", parentId);
-      if (text.trim() === "") {
-        console.log("Text is empty, returning.");
-        return;
-      }
-
-      addReply(parentId, text);
-      setNewComment("");
-      setActiveComment(null);
-      console.log("Reply added successfully.");
-    };
+    if (text.trim() === "") return;
+    addReply(parentId, text);
+    setNewComment("");
+    setActiveComment(null);
   };
 
   /* NEW COMMENT */
@@ -290,16 +263,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                 <CommentForm
                   currentUser={currentUser}
                   initialValue=""
-                  onSubmit={(text: string) => {
-                    console.log(
-                      "Calling handleAddReply for parentId:",
-                      comment.id,
-                      "Text:",
-                      text,
-                    );
-                    const handleSubmit = handleAddReply(comment.id, text); // Call the handler
-                    handleSubmit(new Event("submit")); // Simulate a form submit event
-                  }}
+                  onSubmit={(text: string) => handleAddReply(comment.id, text)}
                   submitLabel="REPLY"
                 />
               )}
