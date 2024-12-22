@@ -64,6 +64,7 @@ export interface CommentProps {
     username: string;
   };
   replies: CommentProps[];
+  level?: number;
 }
 
 export interface CommentComponentProps {
@@ -97,6 +98,8 @@ const Comment = ({
       : comment.content,
   );
   const [score, setScore] = useState<number>(comment.score);
+
+  const MAX_NESTING_LEVEL = 3;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -232,16 +235,23 @@ const Comment = ({
                 {isEditing ? "Cancel" : "Edit"}
               </span>
             </button>
-          </div>
+          </div> /* Reply button */
         ) : (
-          /* Reply button */
-          <button
-            className="reply flex items-center justify-end space-x-2"
-            onClick={() => handleReply(comment.id)}
-            aria-label="Reply"
-          >
-            {iconReply} <span className="font-bold text-mod-blue">Reply</span>
-          </button>
+          <>
+            {(comment.level ?? 0) < MAX_NESTING_LEVEL - 1 && (
+              <button
+                className="reply flex items-center justify-end space-x-2"
+                onClick={() => {
+                  console.log("Current level:", comment.level);
+                  handleReply(comment.id);
+                }}
+                aria-label="Reply"
+              >
+                {iconReply}{" "}
+                <span className="font-bold text-mod-blue">Reply</span>
+              </button>
+            )}
+          </>
         )}
 
         {isEditing ? (

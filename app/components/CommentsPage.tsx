@@ -7,8 +7,8 @@ import CommentsList from "./CommentsList";
   - add hover states
   - implement localStorage
   - fix time stamp
-  - don't wrap button text in spans in Comment component
   - limit nesting level (replying to replies)
+  - do I still need the newComment variable? What does it even do??
 
   ISSUES:
   - comment.replyingTo gets inserted a second time when editing a comment

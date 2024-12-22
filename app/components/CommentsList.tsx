@@ -28,16 +28,20 @@ export const getRelativeTime = (dateString: string) => {
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
+  const [commentsList, setCommentsList] = useState(comments);
   /* make sure comments and replies always have a replies array */
   const initializeComments = (comments: CommentProps[]): CommentProps[] => {
     return comments.map((comment) => ({
       ...comment,
+      level: 0,
       replies: comment.replies ? initializeComments(comment.replies) : [],
     }));
   };
-  const [commentsList, setCommentsList] = useState(
-    initializeComments(comments),
-  );
+
+  useEffect(() => {
+    setCommentsList(initializeComments(comments));
+  }, [comments]);
+
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
@@ -48,14 +52,14 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   const generateId = () => Date.now() + Math.random();
 
-  const renderReplies = (replies: CommentProps[]) => {
+  const renderReplies = (replies: CommentProps[], level = 1) => {
     return (
       <div className="replies ml-4 space-y-4 md:ml-[4rem]">
         {replies.map((reply) => (
           <div key={reply.id} className="space-y-4">
             <Comment
               key={reply.id}
-              comment={reply}
+              comment={{ ...reply, level }}
               currentUser={currentUser}
               relativeTime={relativeTime}
               setRelativeTime={setRelativeTime}
@@ -77,7 +81,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                 />
               )}
             {/* Recursively render nested replies */}
-            {reply.replies?.length > 0 && renderReplies(reply.replies)}
+            {reply.replies?.length > 0 &&
+              renderReplies(reply.replies, level + 1)}
           </div>
         ))}
       </div>
@@ -178,20 +183,27 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       replyingTo: replyingTo(commentsList, parentId),
       user: currentUser,
       replies: [],
+      level: undefined,
     };
 
-    const updateReplies = (commentsList: CommentProps[]): CommentProps[] => {
+    const updateReplies = (
+      commentsList: CommentProps[],
+      currentLevel = 1,
+    ): CommentProps[] => {
       return commentsList.map((comment) => {
         if (comment.id === parentId) {
           return {
             ...comment,
-            replies: [...(comment.replies || []), addedReply],
+            replies: [
+              ...comment.replies,
+              { ...addedReply, level: currentLevel },
+            ],
           };
         } else if (comment.replies && comment.replies.length > 0) {
           return {
             ...comment,
-            replies: updateReplies(comment.replies),
-          }; /* recursion */
+            replies: updateReplies(comment.replies, currentLevel + 1),
+          };
         }
         return comment;
       });
@@ -222,6 +234,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       score: 0,
       user: currentUser,
       replies: [],
+      level: 0,
     };
 
     setCommentsList((prevComments) => [...prevComments, addedComment]);
