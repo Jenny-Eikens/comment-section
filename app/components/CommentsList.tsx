@@ -43,13 +43,15 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   );
 
   useEffect(() => {
+    const updateRelativeTime = (comments: CommentProps[]): CommentProps[] => {
+      return comments.map((comment) => ({
+        ...comment,
+        relativeTime: getRelativeTime(comment.createdAt),
+        replies: updateRelativeTime(comment.replies), // Recursively update replies
+      }));
+    };
     const interval = setInterval(() => {
-      setCommentsList((prevComments) =>
-        prevComments.map((comment) => ({
-          ...comment,
-          relativeTime: getRelativeTime(comment.createdAt),
-        })),
-      );
+      setCommentsList((prevComments) => updateRelativeTime(prevComments));
     }, 60000); // Update every minute
     return () => clearInterval(interval);
   }, [comments]);
@@ -68,7 +70,11 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           <div key={reply.id} className="space-y-4">
             <Comment
               key={reply.id}
-              comment={{ ...reply, level, relativeTime: reply.relativeTime }}
+              comment={{
+                ...reply,
+                level,
+                relativeTime: getRelativeTime(reply.createdAt),
+              }}
               currentUser={currentUser}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
