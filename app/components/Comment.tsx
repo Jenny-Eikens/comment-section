@@ -4,7 +4,6 @@ import React, { useState, useRef, SetStateAction, useEffect } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { CurrentUser, ActiveComment } from "./CommentsList";
-import { getRelativeTime } from "./CommentsList";
 
 const iconPlus = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -57,6 +56,7 @@ export interface CommentProps {
   id: number;
   content: string;
   createdAt: string;
+  relativeTime: string;
   score: number;
   replyingTo?: string;
   user: {
@@ -70,8 +70,6 @@ export interface CommentProps {
 export interface CommentComponentProps {
   comment: CommentProps;
   currentUser: CurrentUser | null;
-  relativeTime: string;
-  setRelativeTime: React.Dispatch<React.SetStateAction<string>>;
   activeComment: ActiveComment | null;
   setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
   deleteComment: (id: number) => void;
@@ -84,8 +82,6 @@ export interface CommentComponentProps {
 const Comment = ({
   comment,
   currentUser,
-  relativeTime,
-  setRelativeTime,
   activeComment,
   setActiveComment,
   handleReply,
@@ -100,14 +96,6 @@ const Comment = ({
   const [score, setScore] = useState<number>(comment.score);
 
   const MAX_NESTING_LEVEL = 3;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRelativeTime(getRelativeTime(comment.createdAt));
-    }, 60000); // Update every minute
-
-    return () => clearInterval(interval);
-  }, [comment.createdAt]);
 
   const isEditing =
     activeComment &&
@@ -208,7 +196,7 @@ const Comment = ({
             </span>
           )}
           <span className="date flex items-center text-gray-blue">
-            {comment.createdAt}
+            {comment.relativeTime}
           </span>
         </div>
 

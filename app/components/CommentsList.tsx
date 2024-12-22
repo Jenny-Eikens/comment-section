@@ -23,32 +23,41 @@ export interface CommentsListProps {
 
 dayjs.extend(relativeTime);
 
-export const getRelativeTime = (dateString: string) => {
+const getRelativeTime = (dateString: string) => {
   return dayjs(dateString).fromNow();
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
-  const [commentsList, setCommentsList] = useState(comments);
   /* make sure comments and replies always have a replies array */
   const initializeComments = (comments: CommentProps[]): CommentProps[] => {
     return comments.map((comment) => ({
       ...comment,
       level: 0,
+      relativeTime: getRelativeTime(comment.createdAt),
       replies: comment.replies ? initializeComments(comment.replies) : [],
     }));
   };
 
+  const [commentsList, setCommentsList] = useState(
+    initializeComments(comments),
+  );
+
   useEffect(() => {
-    setCommentsList(initializeComments(comments));
+    const interval = setInterval(() => {
+      setCommentsList((prevComments) =>
+        prevComments.map((comment) => ({
+          ...comment,
+          relativeTime: getRelativeTime(comment.createdAt),
+        })),
+      );
+    }, 60000); // Update every minute
+    return () => clearInterval(interval);
   }, [comments]);
 
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
   const [newComment, setNewComment] = useState("");
-  const [relativeTime, setRelativeTime] = useState(
-    getRelativeTime(Date.now().toString()),
-  );
 
   const generateId = () => Date.now() + Math.random();
 
@@ -59,10 +68,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           <div key={reply.id} className="space-y-4">
             <Comment
               key={reply.id}
-              comment={{ ...reply, level }}
+              comment={{ ...reply, level, relativeTime: reply.relativeTime }}
               currentUser={currentUser}
-              relativeTime={relativeTime}
-              setRelativeTime={setRelativeTime}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
               handleReply={handleReply}
@@ -178,7 +185,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     const addedReply: CommentProps = {
       id: generateId(),
       content: newComment,
-      createdAt: getRelativeTime(new Date().toISOString()),
+      createdAt: new Date().toISOString(),
+      relativeTime: getRelativeTime(new Date().toISOString()),
       score: 0,
       replyingTo: replyingTo(commentsList, parentId),
       user: currentUser,
@@ -230,7 +238,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     const addedComment: CommentProps = {
       id: generateId(),
       content: newComment,
-      createdAt: getRelativeTime(new Date().toISOString()),
+      createdAt: new Date().toISOString(),
+      relativeTime: getRelativeTime(new Date().toISOString()),
       score: 0,
       user: currentUser,
       replies: [],
@@ -254,10 +263,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           <div key={comment.id} className="space-y-4">
             <Comment
               key={comment.id}
-              comment={comment}
+              comment={{ ...comment, relativeTime: comment.relativeTime }}
               currentUser={currentUser}
-              relativeTime={relativeTime}
-              setRelativeTime={setRelativeTime}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
               handleReply={handleReply}

@@ -3,16 +3,12 @@ import CommentsList from "./CommentsList";
 
 {
   /* TO-DO:
-  - figure out how to update data.json (send changed data to backend)
+  - figure out how to update data.json (send changed data to backend) -> optional
   - add hover states
   - implement localStorage
-  - fix time stamp
-  - limit nesting level (replying to replies)
   - do I still need the newComment variable? What does it even do??
 
   ISSUES:
-  - comment.replyingTo gets inserted a second time when editing a comment
-  - setting relative time doesn't work when I only try to apply it to new comments/replies
   
 */
 }
