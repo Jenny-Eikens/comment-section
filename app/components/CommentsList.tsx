@@ -64,8 +64,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               handleReply={handleReply}
               deleteComment={deleteComment}
               editComment={handleEditComment}
-              newComment={newComment}
-              setNewComment={setNewComment}
             />
             {/* Render the reply form for the active comment */}
             {activeComment &&
@@ -252,8 +250,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               handleReply={handleReply}
               deleteComment={deleteComment}
               editComment={handleEditComment}
-              newComment={newComment}
-              setNewComment={setNewComment}
             />
 
             {/* Conditionally render the reply form in the parent */}

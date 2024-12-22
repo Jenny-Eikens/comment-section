@@ -78,8 +78,6 @@ export interface CommentComponentProps {
   editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
-  newComment: string;
-  setNewComment: React.Dispatch<SetStateAction<string>>;
 }
 
 const Comment = ({
@@ -92,8 +90,6 @@ const Comment = ({
   handleReply,
   deleteComment,
   editComment,
-  newComment,
-  setNewComment,
 }: CommentComponentProps) => {
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo
@@ -136,7 +132,6 @@ const Comment = ({
 
   const handleEdit = () => {
     if (editedComment.trim() !== "") {
-      /* trim() removes whitespace from both ends of a string */
       editComment(comment.id, editedComment);
       setActiveComment(null);
     } else {
@@ -146,20 +141,17 @@ const Comment = ({
 
   const handleEditing = () => {
     if (isEditing) {
-      setEditedComment(
-        comment.replyingTo
-          ? `@${comment.replyingTo} ${comment.content}`
-          : comment.content,
-      );
+      setEditedComment(comment.content);
       setActiveComment(null);
     } else {
+      setEditedComment(comment.content);
       setActiveComment({ type: "editing", id: comment.id });
     }
   };
 
   const handleOpenModal = () => {
     if (dialogRef.current) {
-      dialogRef.current.showModal(); /* ref.current accesses element and allows calling of its methods */
+      dialogRef.current.showModal(); // ref.current accesses element and allows calling of its methods
     }
   };
 
