@@ -73,7 +73,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               comment={{
                 ...reply,
                 level,
-                relativeTime: getRelativeTime(reply.createdAt),
               }}
               currentUser={currentUser}
               activeComment={activeComment}
