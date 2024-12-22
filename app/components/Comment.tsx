@@ -80,7 +80,6 @@ export interface CommentComponentProps {
   /* child component only triggers function, parent handles state update */
   newComment: string;
   setNewComment: React.Dispatch<SetStateAction<string>>;
-  handleSubmit: React.FormEventHandler<HTMLFormElement>;
 }
 
 const Comment = ({
@@ -95,7 +94,6 @@ const Comment = ({
   editComment,
   newComment,
   setNewComment,
-  handleSubmit,
 }: CommentComponentProps) => {
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo

@@ -4,7 +4,6 @@ import CommentsList from "./CommentsList";
 {
   /* TO-DO:
   - figure out how to update data.json (send changed data to backend)
-  - implement dark mode
   - add hover states
   - implement localStorage
   - fix time stamp

@@ -1,19 +1,19 @@
 "use client";
 
-import React, { SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { CurrentUser } from "./CommentsList";
 
 interface CommentFormProps {
   currentUser: CurrentUser | null;
   initialValue: string;
   submitLabel: string;
-  onSubmit: any;
+  onSubmit: (text: string) => void;
 }
 
 const CommentForm = ({
   currentUser,
   submitLabel,
-  initialValue = "",
+  initialValue,
   onSubmit,
 }: CommentFormProps) => {
   const [commentText, setCommentText] = useState(initialValue);
@@ -32,6 +32,7 @@ const CommentForm = ({
       <form
         className="comment-form rounded-md bg-white p-5"
         onSubmit={handleSubmit}
+        noValidate
       >
         <div className="flex items-center md:items-start">
           <img

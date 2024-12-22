@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Comment from "./Comment";
@@ -46,10 +46,13 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     getRelativeTime(Date.now().toString()),
   );
 
+  useEffect(() => {
+    console.log("commentsList updated:", commentsList);
+  }, [commentsList]);
+
   const generateId = () => Date.now() + Math.random();
 
   const renderReplies = (replies: CommentProps[]) => {
-    console.log("Rendering replies:", replies);
     return (
       <div className="replies ml-4 space-y-4 md:ml-[4rem]">
         {replies.map((reply) => (
@@ -67,7 +70,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               editComment={handleEditComment}
               newComment={newComment}
               setNewComment={setNewComment}
-              handleSubmit={(e) => handleAddReply(reply.id, newComment)(e)} // Pass both parentId and text
             />
             {/* Render the reply form for the active comment */}
             {activeComment &&
@@ -76,7 +78,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                 <CommentForm
                   currentUser={currentUser}
                   initialValue=""
-                  onSubmit={(text: string) => addReply(reply.id, text)} // Pass text directly
+                  onSubmit={(text: string) => handleAddReply(reply.id, text)} // Pass text directly
                   submitLabel="REPLY"
                 />
               )}
@@ -143,8 +145,11 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   /* REPLYING */
 
   const handleReply = (commentId: number) => {
-    console.log("Replying to comment with ID:", commentId);
-    setActiveComment({ type: "replying", id: commentId });
+    if (activeComment?.id === commentId) {
+      setActiveComment(null);
+    } else {
+      setActiveComment({ type: "replying", id: commentId });
+    }
   };
 
   const replyingTo = (
@@ -169,6 +174,12 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   };
 
   const addReply = (parentId: number, newComment: string) => {
+    console.log(
+      "addReply called with parentId:",
+      parentId,
+      "newComment:",
+      newComment,
+    );
     if (!currentUser) return;
 
     const addedReply: CommentProps = {
@@ -184,9 +195,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     console.log("Adding reply:", addedReply);
 
     const updateReplies = (commentsList: CommentProps[]): CommentProps[] => {
+      console.log("updateReplies invoked with commentsList:", commentsList);
       return commentsList.map((comment) => {
         if (comment.id === parentId) {
-          console.log("Updating comment:", comment);
+          console.log("Updating comment with ID:", comment.id);
           return {
             ...comment,
             replies: [...(comment.replies || []), addedReply],
@@ -202,23 +214,29 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     };
 
     setCommentsList((prevComments) => {
+      console.log("Previous commentsList:", prevComments);
       const updatedComments = updateReplies(prevComments);
       console.log("Updated commentsList:", updatedComments);
-      return [...updatedComments];
+      return updatedComments;
     });
     setActiveComment(null);
   };
 
   const handleAddReply = (parentId: number, text: string) => {
+    console.log("Received parentId:", parentId, "Text:", text);
+
     return (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.log("Submitting reply with text:", text);
-      if (text.trim() === "") return;
+      console.log("handleAddReply invoked for parentId:", parentId);
+      if (text.trim() === "") {
+        console.log("Text is empty, returning.");
+        return;
+      }
 
-      console.log("Parent ID:", parentId);
       addReply(parentId, text);
       setNewComment("");
       setActiveComment(null);
+      console.log("Reply added successfully.");
     };
   };
 
@@ -263,7 +281,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               editComment={handleEditComment}
               newComment={newComment}
               setNewComment={setNewComment}
-              handleSubmit={(e) => handleAddReply(comment.id, newComment)(e)} // Bind parentId and text
             />
 
             {/* Conditionally render the reply form in the parent */}
@@ -273,7 +290,16 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
                 <CommentForm
                   currentUser={currentUser}
                   initialValue=""
-                  onSubmit={(text: string) => handleAddReply(comment.id, text)} // For replies
+                  onSubmit={(text: string) => {
+                    console.log(
+                      "Calling handleAddReply for parentId:",
+                      comment.id,
+                      "Text:",
+                      text,
+                    );
+                    const handleSubmit = handleAddReply(comment.id, text); // Call the handler
+                    handleSubmit(new Event("submit")); // Simulate a form submit event
+                  }}
                   submitLabel="REPLY"
                 />
               )}
