@@ -209,7 +209,7 @@ const Comment = ({
           <>
             {(comment.level ?? 0) < MAX_NESTING_LEVEL - 1 && (
               <button
-                className="reply flex items-center justify-end space-x-2"
+                className="reply flex items-center justify-end space-x-2 transition-opacity hover:opacity-40"
                 onClick={() => handleReply(comment.id)}
                 aria-label="Reply"
               >
