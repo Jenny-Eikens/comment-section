@@ -79,7 +79,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               currentUser={currentUser}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
-              handleReply={handleReply}
+              handleReply={handleReplyToggle}
               deleteComment={handleDeleteComment}
               editComment={handleEditComment}
             />
@@ -160,7 +160,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* REPLYING */
 
-  const handleReply = (commentId: number) => {
+  const handleReplyToggle = (commentId: number) => {
     if (activeComment?.id === commentId) {
       setActiveComment(null);
     } else {
@@ -284,7 +284,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               currentUser={currentUser}
               activeComment={activeComment}
               setActiveComment={setActiveComment}
-              handleReply={handleReply}
+              handleReply={handleReplyToggle}
               deleteComment={handleDeleteComment}
               editComment={handleEditComment}
             />
