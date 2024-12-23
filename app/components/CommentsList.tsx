@@ -60,6 +60,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
   );
+
   const [newComment, setNewComment] = useState("");
 
   const generateId = () => Date.now() + Math.random();
@@ -78,7 +79,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               }}
               currentUser={currentUser}
               activeComment={activeComment}
-              handleReply={handleReply}
+              handleReply={handleToggleReplying}
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}
@@ -165,7 +166,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* REPLYING */
 
-  const handleReply = (commentId: number) => {
+  const handleToggleReplying = (commentId: number) => {
     if (activeComment?.id === commentId) {
       setActiveComment(null);
     } else {
@@ -288,7 +289,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               comment={{ ...comment, relativeTime: comment.relativeTime }}
               currentUser={currentUser}
               activeComment={activeComment}
-              handleReply={handleReply}
+              handleReply={handleToggleReplying}
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}

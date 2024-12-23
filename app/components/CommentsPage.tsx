@@ -7,9 +7,6 @@ import CommentsList from "./CommentsList";
   - add hover states
   - implement localStorage
   - do I still need the newComment variable? What does it even do??
-
-  ISSUES:
-  
 */
 }
 
