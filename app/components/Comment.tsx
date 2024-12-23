@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useState, useRef, SetStateAction, useEffect } from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useState, useRef, SetStateAction } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -50,8 +48,6 @@ const iconReply = (
   </svg>
 );
 
-dayjs.extend(relativeTime);
-
 export interface CommentProps {
   id: number;
   content: string;
@@ -95,6 +91,8 @@ const Comment = ({
   );
   const [score, setScore] = useState<number>(comment.score);
 
+  const isUser = comment.user.username === currentUser?.username;
+
   const MAX_NESTING_LEVEL = 3;
 
   const isEditing =
@@ -106,8 +104,6 @@ const Comment = ({
     useRef<HTMLDialogElement>(
       null,
     ); /* ref allows for direct interaction with DOM element / React component without use of state */
-
-  const isUser = comment.user.username === currentUser?.username;
 
   const handleClickPlus = () => {
     setScore(score + 1);

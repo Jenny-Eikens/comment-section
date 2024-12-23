@@ -28,7 +28,7 @@ const getRelativeTime = (dateString: string) => {
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
-  /* make sure comments and replies always have a replies array */
+  /* make sure comments and replies always have a replies array, add relativeTime */
   const initializeComments = (comments: CommentProps[]): CommentProps[] => {
     return comments.map((comment) => ({
       ...comment,
@@ -42,6 +42,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     initializeComments(comments),
   );
 
+  /* function to update comments' relative time once a minute */
   useEffect(() => {
     const updateRelativeTime = (comments: CommentProps[]): CommentProps[] => {
       return comments.map((comment) => ({
@@ -54,7 +55,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       setCommentsList((prevComments) => updateRelativeTime(prevComments));
     }, 60000); // Update every minute
     return () => clearInterval(interval);
-  }, [comments]);
+  }, [comments]); // comments as dependency array (not commentsList) because: useEffect should only run when initial comments prop changes, logic for updating relativeTime is independent of derived state (commentsList)
 
   const [activeComment, setActiveComment] = useState<ActiveComment | null>(
     null,
@@ -64,6 +65,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const generateId = () => Date.now() + Math.random();
 
   const renderReplies = (replies: CommentProps[], level = 1) => {
+    // level for limiting nesting depth
     return (
       <div className="replies ml-4 space-y-4 md:ml-[4rem]">
         {replies.map((reply) => (
@@ -78,10 +80,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               activeComment={activeComment}
               setActiveComment={setActiveComment}
               handleReply={handleReply}
-              deleteComment={deleteComment}
+              deleteComment={handleDeleteComment}
               editComment={handleEditComment}
             />
-            {/* Render the reply form for the active comment */}
+            {/* Render reply form for active comment */}
             {activeComment &&
               activeComment.id === reply.id &&
               activeComment.type === "replying" && (
@@ -108,7 +110,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     id: number,
     newContent: string,
   ): CommentProps[] => {
-    /* : Comment[] specifies function's return type */
     return commentsList.map((comment) => {
       if (comment.id === id) {
         return {
@@ -117,10 +118,10 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
         };
       }
       if (comment.replies && comment.replies.length > 0) {
-        const updatedReplies = comment.replies.map((reply) =>
-          reply.id === id ? { ...reply, content: newContent } : reply,
-        );
-        return { ...comment, replies: updatedReplies };
+        return {
+          ...comment,
+          replies: editComment(comment.replies, id, newContent), // recursively call function for all levels of replies
+        };
       }
 
       return comment;
@@ -135,21 +136,25 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* DELETING */
 
-  const deleteComment = (id: number): void => {
-    const removeComment = (commentsList: CommentProps[]): CommentProps[] => {
-      return commentsList
-        .filter((comment) => comment.id !== id)
-        .map((comment) => {
-          if (comment.replies && comment.replies.length > 0) {
-            return {
-              ...comment,
-              replies: removeComment(comment.replies) /* recursion */,
-            };
-          }
-          return comment;
-        });
-    };
-    const updatedComments = removeComment(commentsList);
+  const removeComment = (
+    commentsList: CommentProps[],
+    id: number,
+  ): CommentProps[] => {
+    return commentsList
+      .filter((comment) => comment.id !== id)
+      .map((comment) => {
+        if (comment.replies && comment.replies.length > 0) {
+          return {
+            ...comment,
+            replies: removeComment(comment.replies, id) /* recursion */,
+          };
+        }
+        return comment;
+      });
+  };
+
+  const handleDeleteComment = (id: number): void => {
+    const updatedComments = removeComment(commentsList, id);
     setCommentsList(updatedComments);
   };
 
@@ -184,6 +189,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     return undefined;
   };
 
+  /* function handles logic for updating state */
   const addReply = (parentId: number, newComment: string) => {
     if (!currentUser) return;
 
@@ -199,36 +205,42 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       level: undefined,
     };
 
-    const updateReplies = (
-      commentsList: CommentProps[],
-      currentLevel = 1,
-    ): CommentProps[] => {
-      return commentsList.map((comment) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies: [
-              ...comment.replies,
-              { ...addedReply, level: currentLevel },
-            ],
-          };
-        } else if (comment.replies && comment.replies.length > 0) {
-          return {
-            ...comment,
-            replies: updateReplies(comment.replies, currentLevel + 1),
-          };
-        }
-        return comment;
-      });
-    };
-
     setCommentsList((prevComments) => {
-      const updatedComments = updateReplies(prevComments);
+      const updatedComments = updateReplies(prevComments, parentId, addedReply);
       return updatedComments;
     });
     setActiveComment(null);
   };
 
+  /* function updates replies */
+  const updateReplies = (
+    commentsList: CommentProps[],
+    parentId: number,
+    addedReply: CommentProps,
+    currentLevel = 1,
+  ): CommentProps[] => {
+    return commentsList.map((comment) => {
+      if (comment.id === parentId) {
+        return {
+          ...comment,
+          replies: [...comment.replies, { ...addedReply, level: currentLevel }],
+        };
+      } else if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: updateReplies(
+            comment.replies,
+            parentId,
+            addedReply,
+            currentLevel + 1,
+          ),
+        };
+      }
+      return comment;
+    });
+  };
+
+  /* function calls addReply and resets activeComment to null (deals with user interaction) */
   const handleAddReply = (parentId: number, text: string) => {
     if (text.trim() === "") return;
     addReply(parentId, text);
@@ -273,7 +285,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               activeComment={activeComment}
               setActiveComment={setActiveComment}
               handleReply={handleReply}
-              deleteComment={deleteComment}
+              deleteComment={handleDeleteComment}
               editComment={handleEditComment}
             />
 
