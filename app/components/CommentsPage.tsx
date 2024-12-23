@@ -4,7 +4,6 @@ import CommentsList from "./CommentsList";
 {
   /* TO-DO:
   - figure out how to update data.json (send changed data to backend) -> optional
-  - add hover states
   - implement localStorage
   - do I still need the newComment variable? What does it even do??
   - why do issues with textarea and button in CommentForm arise (see browser dev tools -> inspect DOM)?
