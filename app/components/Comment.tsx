@@ -67,10 +67,12 @@ export interface CommentComponentProps {
   comment: CommentProps;
   currentUser: CurrentUser | null;
   activeComment: ActiveComment | null;
-  setActiveComment: React.Dispatch<SetStateAction<ActiveComment | null>>;
   deleteComment: (id: number) => void;
+  handleEdit: (id: number, newContent: string) => void;
+  handleResetEditing: any;
   handleReply: (commentId: number) => void;
-  editComment: (id: number, newContent: string) => void;
+  handleToggleEditing: (id: number, isEditing: boolean) => void;
+  // editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
 }
@@ -79,10 +81,12 @@ const Comment = ({
   comment,
   currentUser,
   activeComment,
-  setActiveComment,
+  handleEdit,
+  handleResetEditing,
   handleReply,
   deleteComment,
-  editComment,
+  handleToggleEditing,
+  // editComment,
 }: CommentComponentProps) => {
   const [editedComment, setEditedComment] = useState(
     comment.replyingTo
@@ -117,23 +121,14 @@ const Comment = ({
     setEditedComment(e.target.value);
   };
 
-  const handleEdit = () => {
-    if (editedComment.trim() !== "") {
-      editComment(comment.id, editedComment);
-      setActiveComment(null);
-    } else {
-      alert("Comment cannot be empty.");
-    }
+  const handleCancelEdit = () => {
+    setEditedComment(comment.content);
+    handleResetEditing();
   };
 
-  const handleEditing = () => {
-    if (isEditing) {
-      setEditedComment(comment.content);
-      setActiveComment(null);
-    } else {
-      setEditedComment(comment.content);
-      setActiveComment({ type: "editing", id: comment.id });
-    }
+  const handleSaveEdit = () => {
+    if (editedComment.trim() === "") return;
+    handleEdit(comment.id, editedComment);
   };
 
   const handleOpenModal = () => {
@@ -211,7 +206,10 @@ const Comment = ({
             {/* Edit button */}
             <button
               className="flex items-center space-x-2"
-              onClick={handleEditing}
+              onClick={() => {
+                isEditing && handleCancelEdit;
+                handleToggleEditing(comment.id, !isEditing);
+              }}
               aria-label={isEditing ? "Cancel" : "Edit comment"}
             >
               {iconEdit}{" "}
@@ -225,10 +223,7 @@ const Comment = ({
             {(comment.level ?? 0) < MAX_NESTING_LEVEL - 1 && (
               <button
                 className="reply flex items-center justify-end space-x-2"
-                onClick={() => {
-                  console.log("Current level:", comment.level);
-                  handleReply(comment.id);
-                }}
+                onClick={() => handleReply(comment.id)}
                 aria-label="Reply"
               >
                 {iconReply}{" "}
@@ -247,7 +242,7 @@ const Comment = ({
             ></textarea>
             <button
               className="update md:px-auto ml-auto rounded-md bg-mod-blue p-2 px-3 font-[500] text-white md:w-[70%]"
-              onClick={handleEdit}
+              onClick={handleSaveEdit}
             >
               UPDATE
             </button>

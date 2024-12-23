@@ -78,10 +78,11 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               }}
               currentUser={currentUser}
               activeComment={activeComment}
-              setActiveComment={setActiveComment}
-              handleReply={handleReplyToggle}
+              handleReply={handleReply}
               deleteComment={handleDeleteComment}
-              editComment={handleEditComment}
+              handleToggleEditing={handleToggleEditing}
+              handleEdit={handleEditComment}
+              handleResetEditing={handleResetEditing}
             />
             {/* Render reply form for active comment */}
             {activeComment &&
@@ -104,6 +105,14 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   };
 
   /* EDITING */
+
+  const handleToggleEditing = (commentId: number, isEditing: boolean) => {
+    setActiveComment(isEditing ? { type: "editing", id: commentId } : null);
+  };
+
+  const handleResetEditing = () => {
+    setActiveComment(null);
+  };
 
   const editComment = (
     commentsList: CommentProps[],
@@ -132,6 +141,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     setCommentsList((prevComments) =>
       editComment(prevComments, id, newContent),
     );
+    setActiveComment(null);
   };
 
   /* DELETING */
@@ -160,7 +170,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* REPLYING */
 
-  const handleReplyToggle = (commentId: number) => {
+  const handleReply = (commentId: number) => {
     if (activeComment?.id === commentId) {
       setActiveComment(null);
     } else {
@@ -283,10 +293,11 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               comment={{ ...comment, relativeTime: comment.relativeTime }}
               currentUser={currentUser}
               activeComment={activeComment}
-              setActiveComment={setActiveComment}
-              handleReply={handleReplyToggle}
+              handleReply={handleReply}
               deleteComment={handleDeleteComment}
-              editComment={handleEditComment}
+              handleToggleEditing={handleToggleEditing}
+              handleEdit={handleEditComment}
+              handleResetEditing={handleResetEditing}
             />
 
             {/* Conditionally render the reply form in the parent */}
