@@ -72,7 +72,6 @@ export interface CommentComponentProps {
   handleResetEditing: any;
   handleReply: (commentId: number) => void;
   handleToggleEditing: (id: number, isEditing: boolean) => void;
-  // editComment: (id: number, newContent: string) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
 }
@@ -86,13 +85,8 @@ const Comment = ({
   handleReply,
   deleteComment,
   handleToggleEditing,
-  // editComment,
 }: CommentComponentProps) => {
-  const [editedComment, setEditedComment] = useState(
-    comment.replyingTo
-      ? `@${comment.replyingTo} ${comment.content}`
-      : comment.content,
-  );
+  const [editedComment, setEditedComment] = useState(comment.content);
   const [score, setScore] = useState<number>(comment.score);
 
   const isUser = comment.user.username === currentUser?.username;
@@ -128,14 +122,7 @@ const Comment = ({
 
   const handleSaveEdit = () => {
     if (editedComment.trim() === "") return;
-
-    const savedComment =
-      comment.replyingTo &&
-      !editedComment.trim().startsWith(`@${comment.replyingTo}`)
-        ? `@${comment.replyingTo} ${editedComment.trim()}`
-        : editedComment.trim();
-
-    handleEdit(comment.id, savedComment);
+    handleEdit(comment.id, editedComment);
   };
 
   const handleOpenModal = () => {
