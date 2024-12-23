@@ -99,7 +99,7 @@ body {
       "voting comment comment comment"
       "voting comment comment comment"
       ". . . update";
-    grid-template-columns: 45px 1fr;
+    grid-template-columns: 45px 1fr 1fr 30%;
   }
 }
 

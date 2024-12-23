@@ -45,13 +45,13 @@ const CommentForm = ({
           placeholder={
             submitLabel === "SEND" ? "Add a comment..." : "Add a reply..."
           }
-          className="new-comment textarea textarea-bordered h-20 resize-none border border-light-gray"
+          className="new-comment textarea h-20 resize-none border border-light-gray transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:border-dark-blue focus:outline-none"
           onChange={handleChange}
           value={commentText}
         ></textarea>
         <button
           type="submit"
-          className="submit-button md:px-auto rounded-lg bg-mod-blue p-3 font-[500] text-white md:h-[3rem]"
+          className="submit-button md:px-auto rounded-lg bg-mod-blue p-3 font-[500] text-white transition-opacity hover:opacity-40 md:h-[3rem]"
         >
           {submitLabel}
         </button>

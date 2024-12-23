@@ -169,7 +169,7 @@ const Comment = ({
           {/* Username, createdAt */}
           <span className="font-bold">{comment.user.username}</span>
           {isUser && (
-            <span className="badge rounded-[0.2rem] bg-mod-blue font-bold text-white">
+            <span className="badge rounded-[0.2rem] bg-mod-blue p-2 font-[500] text-white">
               you
             </span>
           )}
@@ -182,7 +182,7 @@ const Comment = ({
           <div className="edit flex justify-end space-x-4">
             {/* Delete button */}
             <button
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 transition-opacity hover:opacity-40"
               onClick={handleOpenModal}
               aria-label="Delete comment"
             >
@@ -192,7 +192,7 @@ const Comment = ({
 
             {/* Edit button */}
             <button
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 transition-opacity hover:opacity-40"
               onClick={() => {
                 handleToggleEditing(comment.id, !isEditing);
                 isEditing && setEditedComment(comment.content);
@@ -223,12 +223,12 @@ const Comment = ({
         {isEditing ? (
           <>
             <textarea
-              className="comment textarea textarea-bordered h-28"
+              className="comment textarea h-28 border border-light-gray transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:border-dark-blue focus:outline-none"
               value={editedComment}
               onChange={handleChange}
             ></textarea>
             <button
-              className="update md:px-auto ml-auto rounded-md bg-mod-blue p-2 px-3 font-[500] text-white md:w-[70%]"
+              className="update md:px-auto ml-auto mt-2 rounded-lg bg-mod-blue p-3 font-[500] text-white transition-opacity hover:opacity-40 md:w-[55%]"
               onClick={handleSaveEdit}
             >
               UPDATE
