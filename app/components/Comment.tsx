@@ -128,7 +128,14 @@ const Comment = ({
 
   const handleSaveEdit = () => {
     if (editedComment.trim() === "") return;
-    handleEdit(comment.id, editedComment);
+
+    const savedComment =
+      comment.replyingTo &&
+      !editedComment.trim().startsWith(`@${comment.replyingTo}`)
+        ? `@${comment.replyingTo} ${editedComment.trim()}`
+        : editedComment.trim();
+
+    handleEdit(comment.id, savedComment);
   };
 
   const handleOpenModal = () => {
