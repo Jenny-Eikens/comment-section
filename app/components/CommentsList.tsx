@@ -82,7 +82,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}
-              handleResetEditing={handleResetEditing}
             />
             {/* Render reply form for active comment */}
             {activeComment &&
@@ -108,10 +107,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   const handleToggleEditing = (commentId: number, isEditing: boolean) => {
     setActiveComment(isEditing ? { type: "editing", id: commentId } : null);
-  };
-
-  const handleResetEditing = () => {
-    setActiveComment(null);
   };
 
   const editComment = (
@@ -297,7 +292,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}
-              handleResetEditing={handleResetEditing}
             />
 
             {/* Conditionally render the reply form in the parent */}

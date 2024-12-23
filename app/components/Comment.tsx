@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, SetStateAction } from "react";
+import React, { useState, useRef } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -69,7 +69,6 @@ export interface CommentComponentProps {
   activeComment: ActiveComment | null;
   deleteComment: (id: number) => void;
   handleEdit: (id: number, newContent: string) => void;
-  handleResetEditing: any;
   handleReply: (commentId: number) => void;
   handleToggleEditing: (id: number, isEditing: boolean) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
@@ -81,7 +80,6 @@ const Comment = ({
   currentUser,
   activeComment,
   handleEdit,
-  handleResetEditing,
   handleReply,
   deleteComment,
   handleToggleEditing,
@@ -113,11 +111,6 @@ const Comment = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditedComment(e.target.value);
-  };
-
-  const handleCancelEdit = () => {
-    setEditedComment(comment.content);
-    handleResetEditing();
   };
 
   const handleSaveEdit = () => {
@@ -201,8 +194,8 @@ const Comment = ({
             <button
               className="flex items-center space-x-2"
               onClick={() => {
-                isEditing && handleCancelEdit;
                 handleToggleEditing(comment.id, !isEditing);
+                isEditing && setEditedComment(comment.content);
               }}
               aria-label={isEditing ? "Cancel" : "Edit comment"}
             >
