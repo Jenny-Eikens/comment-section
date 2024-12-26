@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, SetStateAction } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -71,6 +71,8 @@ export interface CommentComponentProps {
   handleEdit: (id: number, newContent: string) => void;
   handleReply: (commentId: number) => void;
   handleToggleEditing: (id: number, isEditing: boolean) => void;
+  onClickPlus: (id: number) => void;
+  onClickMinus: (id: number) => void;
   /* return type is set to void here because return value isn't relevant to /  won't be used by component */
   /* child component only triggers function, parent handles state update */
 }
@@ -83,9 +85,10 @@ const Comment = ({
   handleReply,
   deleteComment,
   handleToggleEditing,
+  onClickPlus,
+  onClickMinus,
 }: CommentComponentProps) => {
   const [editedComment, setEditedComment] = useState(comment.content);
-  const [score, setScore] = useState<number>(comment.score);
 
   const isUser = comment.user.username === currentUser?.username;
 
@@ -100,14 +103,6 @@ const Comment = ({
     useRef<HTMLDialogElement>(
       null,
     ); /* ref allows for direct interaction with DOM element / React component without use of state */
-
-  const handleClickPlus = () => {
-    setScore(score + 1);
-  };
-
-  const handleClickMinus = () => {
-    if (score > 0) setScore(score - 1);
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditedComment(e.target.value);
@@ -140,16 +135,16 @@ const Comment = ({
         <div className="voting flex flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[6rem] md:w-auto md:flex-col md:py-3">
           <button
             className="p-1"
-            onClick={() => handleClickPlus()}
+            onClick={() => onClickPlus(comment.id)}
             disabled={isUser}
             aria-label="Plus one"
           >
             {iconPlus}
           </button>
-          <span className="font-bold text-mod-blue">{score}</span>
+          <span className="font-bold text-mod-blue">{comment.score}</span>
           <button
             className="p-1"
-            onClick={() => handleClickMinus()}
+            onClick={() => onClickMinus(comment.id)}
             disabled={isUser}
             aria-label="Minus one"
           >

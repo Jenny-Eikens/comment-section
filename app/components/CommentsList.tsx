@@ -92,6 +92,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               key={reply.id}
               comment={{
                 ...reply,
+                score: reply.score,
                 level,
               }}
               currentUser={currentUser}
@@ -100,6 +101,8 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}
+              onClickMinus={() => handleClickMinus(reply.id)}
+              onClickPlus={() => handleClickPlus(reply.id)}
             />
             {/* Render reply form for active comment */}
             {activeComment &&
@@ -119,6 +122,58 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
         ))}
       </div>
     );
+  };
+
+  /* VOTING */
+
+  const onClickMinus = (
+    commentsList: CommentProps[],
+    id: number,
+  ): CommentProps[] => {
+    return commentsList.map((comment) => {
+      if (comment.id === id && comment.score > 0) {
+        return {
+          ...comment,
+          score: comment.score - 1,
+        };
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: onClickMinus(comment.replies, id),
+        };
+      }
+      return comment;
+    });
+  };
+
+  const handleClickMinus = (id: number) => {
+    setCommentsList((prevComments) => onClickMinus(prevComments, id));
+  };
+
+  const onClickPlus = (
+    commentsList: CommentProps[],
+    id: number,
+  ): CommentProps[] => {
+    return commentsList.map((comment) => {
+      if (comment.id === id) {
+        return {
+          ...comment,
+          score: comment.score + 1,
+        };
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: onClickPlus(comment.replies, id),
+        };
+      }
+      return comment;
+    });
+  };
+
+  const handleClickPlus = (id: number) => {
+    setCommentsList((prevComments) => onClickPlus(prevComments, id));
   };
 
   /* EDITING */
@@ -303,13 +358,19 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           <div key={comment.id} className="space-y-4">
             <Comment
               key={comment.id}
-              comment={{ ...comment, relativeTime: comment.relativeTime }}
+              comment={{
+                ...comment,
+                score: comment.score,
+                relativeTime: comment.relativeTime,
+              }}
               currentUser={currentUser}
               activeComment={activeComment}
               handleReply={handleToggleReplying}
               deleteComment={handleDeleteComment}
               handleToggleEditing={handleToggleEditing}
               handleEdit={handleEditComment}
+              onClickMinus={() => handleClickMinus(comment.id)}
+              onClickPlus={() => handleClickPlus(comment.id)}
             />
 
             {/* Conditionally render the reply form in the parent */}
