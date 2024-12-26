@@ -5,7 +5,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Comment from "./Comment";
 import { CommentProps } from "./Comment";
 import CommentForm from "./CommentForm";
-import { json } from "stream/consumers";
 
 export interface CurrentUser {
   image: { png: string; webp: string };

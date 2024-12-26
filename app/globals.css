@@ -43,6 +43,10 @@ body {
   grid-template-columns: 95px 1fr;
 }
 
+textarea {
+  @apply resize-none border border-light-gray-blue transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:cursor-text focus:border-dark-blue focus:outline-none;
+}
+
 .voting {
   grid-area: voting;
 }

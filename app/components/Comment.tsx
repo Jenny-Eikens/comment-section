@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, SetStateAction } from "react";
+import React, { useState, useRef } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -218,7 +218,7 @@ const Comment = ({
         {isEditing ? (
           <>
             <textarea
-              className="comment textarea h-28 border border-light-gray transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:border-dark-blue focus:outline-none"
+              className="comment textarea h-28"
               value={editedComment}
               onChange={handleChange}
             ></textarea>
