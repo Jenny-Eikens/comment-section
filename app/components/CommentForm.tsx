@@ -22,7 +22,14 @@ const CommentForm = ({
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (commentText.trim() === "") return;
+    if (commentText.trim() === "") {
+      const errorMessage =
+        submitLabel === "SEND"
+          ? "Comment can't be empty!"
+          : "Reply can't be empty!";
+      alert(errorMessage);
+      return;
+    }
     onSubmit(commentText);
     setCommentText("");
   };
@@ -45,7 +52,7 @@ const CommentForm = ({
           placeholder={
             submitLabel === "SEND" ? "Add a comment..." : "Add a reply..."
           }
-          className="new-comment textarea h-20 resize-none border border-light-gray transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:border-dark-blue focus:outline-none"
+          className="new-comment textarea h-20 resize-none border border-light-gray transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:cursor-text focus:border-dark-blue focus:outline-none"
           onChange={handleChange}
           value={commentText}
         ></textarea>

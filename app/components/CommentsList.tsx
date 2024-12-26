@@ -5,6 +5,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Comment from "./Comment";
 import { CommentProps } from "./Comment";
 import CommentForm from "./CommentForm";
+import { json } from "stream/consumers";
 
 export interface CurrentUser {
   image: { png: string; webp: string };
@@ -28,7 +29,10 @@ const getRelativeTime = (dateString: string) => {
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
-  /* make sure comments and replies always have a replies array, add relativeTime */
+  /* 
+  - add level to limit nesting
+  - add relativeTime
+   */
   const initializeComments = (comments: CommentProps[]): CommentProps[] => {
     return comments.map((comment) => ({
       ...comment,
@@ -38,9 +42,22 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     }));
   };
 
-  const [commentsList, setCommentsList] = useState(
-    initializeComments(comments),
-  );
+  /* function to initialize commentsList with data stored in localStorage */
+  const getStoredComments = (): CommentProps[] | null => {
+    const storedComments = localStorage.getItem("CommentsList");
+    return storedComments ? JSON.parse(storedComments) : null;
+  };
+
+  const [commentsList, setCommentsList] = useState(() => {
+    const storedComments = getStoredComments();
+    return storedComments ? storedComments : initializeComments(comments);
+  });
+
+  useEffect(() => {
+    const stringifiedCommentsList = JSON.stringify(commentsList);
+    localStorage.setItem("CommentsList", stringifiedCommentsList);
+    console.log("Parsed commentsList", JSON.parse(stringifiedCommentsList));
+  }, [commentsList]);
 
   /* function to update comments' relative time once a minute */
   useEffect(() => {
