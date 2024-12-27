@@ -77,8 +77,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     null,
   );
 
-  const [newComment, setNewComment] = useState("");
-
   const generateId = () => Date.now() + Math.random();
 
   const renderReplies = (replies: CommentProps[], level = 1) => {
@@ -267,12 +265,12 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   };
 
   /* function handles logic for updating state */
-  const addReply = (parentId: number, newComment: string) => {
+  const addReply = (parentId: number, newContent: string) => {
     if (!currentUser) return;
 
     const addedReply: CommentProps = {
       id: generateId(),
-      content: newComment,
+      content: newContent,
       createdAt: new Date().toISOString(),
       relativeTime: getRelativeTime(new Date().toISOString()),
       score: 0,
@@ -321,7 +319,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const handleAddReply = (parentId: number, text: string) => {
     if (text.trim() === "") return;
     addReply(parentId, text);
-    setNewComment("");
     setActiveComment(null);
   };
 

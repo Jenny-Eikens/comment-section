@@ -2,11 +2,11 @@ import React from "react";
 import CommentsList from "./CommentsList";
 
 /* TO-DO:
-  - do I still need the newComment variable? What does it even do??
-  - figure out why I can't overwrite DaisyUI styles in global.css
+  - add vertical line from comment to commentForm
 
   ISSUES:
  - why do issues with textarea and button in CommentForm arise (see browser dev tools -> inspect DOM)?
+ - inspect hydration error
 */
 
 async function fetchComments() {

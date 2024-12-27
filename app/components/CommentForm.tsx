@@ -52,7 +52,7 @@ const CommentForm = ({
           placeholder={
             submitLabel === "SEND" ? "Add a comment..." : "Add a reply..."
           }
-          className="new-comment textarea h-20"
+          className="new-comment h-24"
           onChange={handleChange}
           value={commentText}
         ></textarea>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, act } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -98,6 +98,11 @@ const Comment = ({
     activeComment &&
     activeComment.id === comment.id &&
     activeComment.type === "editing";
+
+  const isReplying =
+    activeComment &&
+    activeComment.id === comment.id &&
+    activeComment.type === "replying";
 
   const dialogRef =
     useRef<HTMLDialogElement>(
@@ -209,7 +214,9 @@ const Comment = ({
                 aria-label="Reply"
               >
                 {iconReply}{" "}
-                <span className="font-bold text-mod-blue">Reply</span>
+                <span className="font-bold text-mod-blue">
+                  {isReplying ? "Cancel" : "Reply"}
+                </span>
               </button>
             )}
           </>
@@ -218,7 +225,7 @@ const Comment = ({
         {isEditing ? (
           <>
             <textarea
-              className="comment textarea h-28"
+              className="comment h-24"
               value={editedComment}
               onChange={handleChange}
             ></textarea>
