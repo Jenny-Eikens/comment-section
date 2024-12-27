@@ -3,6 +3,7 @@ import CommentsList from "./CommentsList";
 
 /* TO-DO:
   - understand implementation of dark mode
+  - understand difference between onClick={function} and onClick)={() => function}
 
   ISSUES:
  - inspect hydration error
