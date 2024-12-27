@@ -173,7 +173,7 @@ const Comment = ({
               you
             </span>
           )}
-          <span className="date flex items-center text-gray-blue">
+          <span className="date flex items-center text-center text-gray-blue">
             {comment.relativeTime}
           </span>
         </div>

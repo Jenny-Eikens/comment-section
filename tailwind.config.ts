@@ -9,8 +9,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
         "mod-blue": "hsl(238, 40%, 52%)",
         "soft-red": "hsl(358, 79%, 66%)",
         "light-gray-blue": "hsl(239, 57%, 85%)",

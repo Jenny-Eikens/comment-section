@@ -82,7 +82,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   const renderReplies = (replies: CommentProps[], level = 1) => {
     // level for limiting nesting depth
     return (
-      <div className="replies ml-4 space-y-4 md:ml-[4rem]">
+      <div className="replies ml-4 space-y-4 md:ml-[2.5rem]">
         {replies.map((reply) => (
           <div key={reply.id} className="space-y-4">
             <Comment
@@ -349,7 +349,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   return (
     <>
       <div className="content-wrapper w-[90vw] max-w-[700px] space-y-4">
-        <h1>Comments</h1>
         {commentsList.map((comment: CommentProps) => (
           <div key={comment.id} className="space-y-4">
             <Comment
@@ -382,7 +381,9 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               )}
 
             {/* Render top-level replies */}
-            {comment.replies?.length > 0 && renderReplies(comment.replies)}
+            <div className="border-l-[3px] border-light-gray md:ml-[2.5rem]">
+              {comment.replies?.length > 0 && renderReplies(comment.replies)}
+            </div>
           </div>
         ))}
         <CommentForm
@@ -392,6 +393,16 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           submitLabel="SEND"
         />
       </div>
+
+      <footer>
+        <div className="mt-8 text-center text-sm">
+          Challenge by{" "}
+          <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">
+            Frontend Mentor
+          </a>
+          . Coded by <a href="#">Jennifer Eikens</a>.
+        </div>
+      </footer>
     </>
   );
 };
