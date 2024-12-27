@@ -10,9 +10,9 @@ export const metadata = {
 export default function Home() {
   return (
     <>
-      <main className="m-auto flex min-h-[100vh] w-full flex-col items-center justify-center bg-v-light-gray p-3">
+      <div className="m-auto flex min-h-[100vh] w-full flex-col items-center justify-center bg-base-100 p-3">
         <CommentsPage />
-      </main>
+      </div>
     </>
   );
 }

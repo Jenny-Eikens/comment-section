@@ -133,11 +133,11 @@ const Comment = ({
   return (
     <>
       <div
-        className="comment-container card rounded-md bg-white p-5"
+        className="comment-container card rounded-md bg-base-300 p-5"
         key={comment.id}
       >
         {/* Voting */}
-        <div className="voting flex flex-row items-center justify-between rounded-lg bg-v-light-gray p-2 md:mr-2 md:h-[6rem] md:w-auto md:flex-col md:py-3">
+        <div className="voting flex flex-row items-center justify-between rounded-lg bg-base-100 p-2 md:mr-2 md:h-[6rem] md:w-auto md:flex-col md:py-3">
           <button
             className="p-1"
             onClick={() => onClickPlus(comment.id)}
@@ -146,7 +146,7 @@ const Comment = ({
           >
             {iconPlus}
           </button>
-          <span className="font-bold text-mod-blue">{comment.score}</span>
+          <span className="font-[700] text-primary">{comment.score}</span>
           <button
             className="p-1"
             onClick={() => onClickMinus(comment.id)}
@@ -167,13 +167,15 @@ const Comment = ({
             />
           </div>
           {/* Username, createdAt */}
-          <span className="font-bold">{comment.user.username}</span>
+          <span className="font-[700] text-base-200">
+            {comment.user.username}
+          </span>
           {isUser && (
-            <span className="badge rounded-[0.2rem] bg-mod-blue p-2 font-[500] text-white">
+            <span className="badge rounded-[0.2rem] border-none bg-primary p-2 font-[500] text-base-300">
               you
             </span>
           )}
-          <span className="date flex items-center text-center text-gray-blue">
+          <span className="date flex items-center text-center text-neutral">
             {comment.relativeTime}
           </span>
         </div>
@@ -187,7 +189,7 @@ const Comment = ({
               aria-label="Delete comment"
             >
               {iconDelete}{" "}
-              <span className="font-bold text-soft-red">Delete</span>
+              <span className="font-[500] text-warning">Delete</span>
             </button>
 
             {/* Edit button */}
@@ -200,7 +202,7 @@ const Comment = ({
               aria-label={isEditing ? "Cancel" : "Edit comment"}
             >
               {iconEdit}{" "}
-              <span className="font-bold text-mod-blue">
+              <span className="font-[500] text-primary">
                 {isEditing ? "Cancel" : "Edit"}
               </span>
             </button>
@@ -214,7 +216,7 @@ const Comment = ({
                 aria-label="Reply"
               >
                 {iconReply}{" "}
-                <span className="font-bold text-mod-blue">
+                <span className="font-[500] text-primary">
                   {isReplying ? "Cancel" : "Reply"}
                 </span>
               </button>
@@ -230,18 +232,18 @@ const Comment = ({
               onChange={handleChange}
             ></textarea>
             <button
-              className="update md:px-auto ml-auto mt-2 rounded-lg bg-mod-blue p-3 font-[500] text-white transition-opacity hover:opacity-40 md:w-[55%]"
+              className="update md:px-auto ml-auto mt-2 rounded-lg bg-primary p-3 font-[500] text-base-300 transition-opacity hover:opacity-40 md:w-[55%]"
               onClick={handleSaveEdit}
             >
               UPDATE
             </button>
           </>
         ) : (
-          <div className="comment text-gray-blue md:pr-2">
+          <div className="comment text-neutral md:pr-2">
             {comment.replyingTo && (
               <a
                 href="#"
-                className="font-bold text-mod-blue hover:cursor-pointer"
+                className="font-[700] text-primary hover:cursor-pointer"
               >
                 @{comment.replyingTo}{" "}
               </a>
@@ -255,16 +257,15 @@ const Comment = ({
       <dialog ref={dialogRef} className="modal p-4 md:p-0">
         <div className="modal-box w-[100%] max-w-[400px] space-y-2 rounded-lg p-6 md:rounded-md md:p-8">
           <h2 className="text-2xl font-[500]">Delete comment</h2>
-          <p className="py-4 text-gray-blue">
+          <p className="py-4 text-neutral">
             Are you sure you want to delete this comment? This will remove the
             comment and can't be undone.
           </p>
           <div className="modal-action">
             <form method="dialog" className="grid w-full grid-cols-2 gap-3">
-              {/* if there is a button in form, it will close the modal */}
               <button
                 onClick={handleCloseModal}
-                className="rounded-lg bg-gray-blue p-3 text-lg font-[500] text-white"
+                className="rounded-lg bg-neutral p-3 text-lg font-[500] text-base-300"
               >
                 NO, CANCEL
               </button>
@@ -273,7 +274,7 @@ const Comment = ({
                   deleteComment(comment.id);
                   handleCloseModal;
                 }}
-                className="rounded-lg bg-soft-red p-3 text-lg font-[500] text-white"
+                className="rounded-lg bg-warning p-3 text-lg font-[500] text-base-300"
               >
                 YES, DELETE
               </button>

@@ -17,19 +17,9 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
   font-family: "Rubik";
   font-size: 16px;
-  @apply text-dark-blue;
 }
 
 .comment-container {
@@ -44,7 +34,7 @@ body {
 }
 
 textarea {
-  @apply textarea resize-none border border-light-gray-blue transition-all hover:cursor-pointer hover:border hover:border-dark-blue focus:cursor-text focus:border-dark-blue focus:outline-none;
+  @apply textarea resize-none border border-neutral transition-all hover:cursor-pointer hover:border hover:border-base-200 focus:cursor-text focus:border-base-200 focus:outline-none;
 }
 
 .voting {
@@ -97,7 +87,7 @@ textarea {
 }
 
 footer a {
-  @apply text-dark-blue underline;
+  @apply text-base-200 underline;
 }
 
 @media (min-width: 768px) {

@@ -37,7 +37,7 @@ const CommentForm = ({
   return (
     <>
       <form
-        className="comment-form rounded-md bg-white p-5"
+        className="comment-form rounded-md bg-base-300 p-5"
         onSubmit={handleSubmit}
         noValidate
       >
@@ -58,7 +58,7 @@ const CommentForm = ({
         ></textarea>
         <button
           type="submit"
-          className="submit-button md:px-auto rounded-lg bg-mod-blue p-3 font-[500] text-white transition-opacity hover:opacity-40 md:h-[3rem]"
+          className="submit-button md:px-auto rounded-lg bg-primary p-3 font-[500] text-base-100 transition-opacity hover:opacity-40 md:h-[3rem]"
         >
           {submitLabel}
         </button>

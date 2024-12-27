@@ -2,10 +2,9 @@ import React from "react";
 import CommentsList from "./CommentsList";
 
 /* TO-DO:
-  - add vertical line from comment to commentForm
+  - understand implementation of dark mode
 
   ISSUES:
- - why do issues with textarea and button in CommentForm arise (see browser dev tools -> inspect DOM)?
  - inspect hydration error
 */
 
