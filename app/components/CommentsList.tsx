@@ -72,7 +72,6 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
   useEffect(() => {
     const stringifiedCommentsList = JSON.stringify(commentsList);
     localStorage.setItem("CommentsList", stringifiedCommentsList);
-    console.log("Parsed commentsList", JSON.parse(stringifiedCommentsList));
   }, [commentsList]);
 
   /* function to update comments' relative time once a minute */
