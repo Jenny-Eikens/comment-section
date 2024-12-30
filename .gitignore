@@ -20,6 +20,7 @@
 # production
 /build
 /design
+style-guide.md
 
 # misc
 .DS_Store
