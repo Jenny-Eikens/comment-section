@@ -69,6 +69,7 @@ Lastly, I implemented a dark mode for the first time. I defined my own custom th
 ### Continued development
 
 I have a lot more to learn about Next.js (especially seeing as this project was only a single-page app, so no setting up multiple pages and no routing were involved). Also, I'm afraid I'll have to look into recursion a bit more in the future.
+I also might start including testing in future projects to get the projects I build closer to real-world apps.
 
 ## Author
 
