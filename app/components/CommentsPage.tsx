@@ -1,14 +1,6 @@
 import React from "react";
 import CommentsList from "./CommentsList";
 
-/* TO-DO:
-  - understand implementation of dark mode
-  - understand difference between onClick={function} and onClick)={() => function}
-
-  ISSUES:
- - inspect hydration error
-*/
-
 async function fetchComments() {
   try {
     const baseUrl =
