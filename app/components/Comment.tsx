@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, act } from "react";
+import React, { useState, useRef } from "react";
 import { CurrentUser, ActiveComment } from "./CommentsList";
 
 const iconPlus = (
@@ -259,7 +259,7 @@ const Comment = ({
           <h2 className="text-2xl font-[500]">Delete comment</h2>
           <p className="py-4 text-neutral">
             Are you sure you want to delete this comment? This will remove the
-            comment and can't be undone.
+            comment and can&#39;t be undone.
           </p>
           <div className="modal-action">
             <form method="dialog" className="grid w-full grid-cols-2 gap-3">
