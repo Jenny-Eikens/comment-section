@@ -272,7 +272,7 @@ const Comment = ({
               <button
                 onClick={() => {
                   deleteComment(comment.id);
-                  handleCloseModal;
+                  handleCloseModal();
                 }}
                 className="rounded-lg bg-warning p-3 text-lg font-[500] text-base-300"
               >
