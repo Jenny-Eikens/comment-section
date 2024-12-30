@@ -5,7 +5,7 @@ async function fetchComments() {
   try {
     const baseUrl =
       process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""; // in production, use relative path
-    const res = await fetch(`${baseUrl}/data.json`);
+    const res = await fetch("/data.json");
     const data = await res.json();
     return {
       comments: data.comments,

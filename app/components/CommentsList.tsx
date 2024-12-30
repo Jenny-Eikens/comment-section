@@ -28,9 +28,7 @@ const getRelativeTime = (dateString: string) => {
 };
 
 const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "lighttheme",
-  );
+  const [theme, setTheme] = useState("lighttheme");
 
   const toggleTheme = () => {
     const newTheme = theme === "lighttheme" ? "darktheme" : "lighttheme";
