@@ -5,7 +5,7 @@ async function fetchComments() {
   try {
     const baseUrl =
       process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""; // in production, use relative path
-    const res = await fetch("/data.json");
+    const res = await fetch(`${baseUrl}/data.json`);
     const data = await res.json();
     if (!data || !data.comments || !data.currentUser) {
       throw new Error("Invalid data format");
