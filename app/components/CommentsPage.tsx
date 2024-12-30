@@ -7,6 +7,9 @@ async function fetchComments() {
       process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""; // in production, use relative path
     const res = await fetch("/data.json");
     const data = await res.json();
+    if (!data || !data.comments || !data.currentUser) {
+      throw new Error("Invalid data format");
+    }
     return {
       comments: data.comments,
       currentUser: data.currentUser,
@@ -22,6 +25,11 @@ async function fetchComments() {
 
 const CommentsPage = async () => {
   const { comments, currentUser } = await fetchComments();
+
+  if (!comments || !currentUser) {
+    console.error("Missing required data:", { comments, currentUser });
+    return <div>Error loading data</div>;
+  }
 
   return <CommentsList comments={comments} currentUser={currentUser} />;
 };

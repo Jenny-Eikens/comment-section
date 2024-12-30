@@ -1,10 +1,17 @@
 import CommentsPage from "./components/CommentsPage";
+import type { Metadata, Viewport } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Frontend Mentor | Interactive Comment Section",
   icons: {
     icon: "/favicon-32x32.png",
   },
+  description: "Interactive comment section",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function Home() {
