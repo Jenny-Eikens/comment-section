@@ -451,7 +451,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       </main>
 
       <footer>
-        <div className="mt-8 p-2 text-center text-sm">
+        <div className="mt-8 p-2 text-center text-sm md:p-1">
           Challenge by{" "}
           <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">
             Frontend Mentor
