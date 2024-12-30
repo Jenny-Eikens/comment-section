@@ -168,7 +168,7 @@ const Comment = ({
           </div>
           {/* Username, createdAt */}
           <span className="font-[700] text-base-200">
-            {comment.user.username}
+            <a href="#">{comment.user.username}</a>
           </span>
           {isUser && (
             <span className="badge rounded-[0.2rem] border-none bg-primary p-2 font-[500] text-base-300">

@@ -37,7 +37,7 @@ body {
 }
 
 textarea {
-  @apply textarea resize-none border border-neutral bg-transparent transition-all hover:cursor-pointer hover:border hover:border-base-200 focus:cursor-text focus:border-base-200 focus:outline-none;
+  @apply textarea resize-none border border-accent bg-transparent transition-all hover:cursor-pointer hover:border hover:border-base-200 focus:cursor-text focus:border-base-200 focus:outline-none;
 }
 
 .voting {

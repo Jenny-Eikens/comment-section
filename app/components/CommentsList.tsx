@@ -405,6 +405,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </label>
+
       <main className="content-wrapper w-[90vw] max-w-[700px] space-y-4">
         {commentsList.map((comment: CommentProps) => (
           <div key={comment.id} className="space-y-4">
@@ -452,7 +453,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
       </main>
 
       <footer>
-        <div className="mt-8 text-center text-sm">
+        <div className="mt-8 p-2 text-center text-sm">
           Challenge by{" "}
           <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">
             Frontend Mentor
