@@ -13,7 +13,11 @@ async function fetchComments() {
     /* const res = await fetch(
       isDevelopment ? "http://localhost:3000/data.json" : "/data.json",
     ); */
-    const res = await fetch(process.env.URL + "/data.json");
+    const res = await fetch(
+      process.env.NODE_ENV === "development"
+        ? process.env.URL + "/data.json"
+        : "/data.json",
+    );
     const data = await res.json();
     if (!data || !data.comments || !data.currentUser) {
       throw new Error("Invalid data format");
