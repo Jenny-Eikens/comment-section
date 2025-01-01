@@ -9,7 +9,7 @@ async function fetchComments() {
     const url = new URL("/data.json", baseUrl); // Use the `URL` constructor to handle relative URLs
     const res = await fetch(url); */
 
-    const isDevelopment = process.env.NODE_ENV === "development";
+    // const isDevelopment = process.env.NODE_ENV === "development";
     /* const res = await fetch(
       isDevelopment ? "http://localhost:3000/data.json" : "/data.json",
     ); */
