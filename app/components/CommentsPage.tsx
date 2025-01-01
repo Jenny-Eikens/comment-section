@@ -3,17 +3,8 @@ import CommentsList from "./CommentsList";
 
 async function fetchComments() {
   try {
-    /* const baseUrl =
-      process.env.NODE_ENV === "development" ? "http://localhost:3000" : ""; // in production, use relative path
-
-    const url = new URL("/data.json", baseUrl); // Use the `URL` constructor to handle relative URLs
-    const res = await fetch(url); */
-
-    const isDevelopment = process.env.NODE_ENV === "development";
-
-    const res = await fetch(
-      isDevelopment ? "http://localhost:3000/data.json" : "/data.json",
-    );
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const res = await fetch(`${baseUrl}/data.json`);
     const data = await res.json();
     if (!data || !data.comments || !data.currentUser) {
       throw new Error("Invalid data format");
