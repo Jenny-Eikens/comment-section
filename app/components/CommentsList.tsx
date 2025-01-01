@@ -34,7 +34,9 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     const newTheme = theme === "lighttheme" ? "darktheme" : "lighttheme";
     setTheme(newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", newTheme);
+    }
   };
 
   useEffect(() => {
