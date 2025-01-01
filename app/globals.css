@@ -33,7 +33,7 @@ body {
     "comment comment"
     "update update"
     "voting interact";
-  grid-template-columns: 95px 1fr;
+  grid-template-columns: 105px 1fr;
 }
 
 textarea {
