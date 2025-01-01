@@ -106,6 +106,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
               key={reply.id}
               comment={{
                 ...reply,
+                createdAt: new Date().toISOString(),
                 score: reply.score,
                 level,
               }}
