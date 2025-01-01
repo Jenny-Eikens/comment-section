@@ -5,10 +5,6 @@ import path from "path";
 
 async function fetchComments() {
   try {
-    /* const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    console.log("Fetching from URL:", baseUrl);
-    const res = await fetch(`${baseUrl}/data.json`);
-    const data = await res.json(); */
     const filePath = path.join(process.cwd(), "public", "data.json");
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const data = JSON.parse(fileContent);
