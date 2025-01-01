@@ -34,9 +34,7 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
     const newTheme = theme === "lighttheme" ? "darktheme" : "lighttheme";
     setTheme(newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", newTheme);
-    }
+    localStorage.setItem("theme", newTheme);
   };
 
   useEffect(() => {
@@ -60,8 +58,11 @@ const CommentsList = ({ comments, currentUser }: CommentsListProps) => {
 
   /* function to initialize commentsList with data stored in localStorage */
   const getStoredComments = (): CommentProps[] | null => {
-    const storedComments = localStorage.getItem("CommentsList");
-    return storedComments ? JSON.parse(storedComments) : null;
+    if (typeof window !== "undefined") {
+      const storedComments = localStorage.getItem("CommentsList");
+      return storedComments ? JSON.parse(storedComments) : null;
+    }
+    return null;
   };
 
   const [commentsList, setCommentsList] = useState(() => {

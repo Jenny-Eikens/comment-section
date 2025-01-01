@@ -3,7 +3,9 @@ import CommentsList from "./CommentsList";
 
 async function fetchComments() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    console.log("Fetching from URL:", baseUrl);
+    // const res = await fetch(process.env.NODE_ENV === "development" ? `${baseUrl}/data.json` : process.env.NODE_ENV === "production" ? `${VERCEL_URL}/data.json`);
     const res = await fetch(`${baseUrl}/data.json`);
     const data = await res.json();
     if (!data || !data.comments || !data.currentUser) {
