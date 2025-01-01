@@ -227,12 +227,12 @@ const Comment = ({
         {isEditing ? (
           <>
             <textarea
-              className="comment h-24"
+              className="comment h-36 md:h-24"
               value={editedComment}
               onChange={handleChange}
             ></textarea>
             <button
-              className="update md:px-auto ml-auto mt-2 rounded-lg bg-primary p-3 font-[500] text-base-300 transition-opacity hover:opacity-40 md:w-[55%]"
+              className="update md:px-auto my-4 ml-auto rounded-lg bg-primary p-3 font-[500] text-base-300 transition-opacity hover:opacity-40 md:my-0 md:mt-2 md:w-[55%]"
               onClick={handleSaveEdit}
             >
               UPDATE
