@@ -1,13 +1,17 @@
 import React from "react";
 import CommentsList from "./CommentsList";
+import fs from "fs";
+import path from "path";
 
 async function fetchComments() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    /* const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     console.log("Fetching from URL:", baseUrl);
-    // const res = await fetch(process.env.NODE_ENV === "development" ? `${baseUrl}/data.json` : process.env.NODE_ENV === "production" ? `${VERCEL_URL}/data.json`);
     const res = await fetch(`${baseUrl}/data.json`);
-    const data = await res.json();
+    const data = await res.json(); */
+    const filePath = path.join(process.cwd(), "public", "data.json");
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const data = JSON.parse(fileContent);
     if (!data || !data.comments || !data.currentUser) {
       throw new Error("Invalid data format");
     }
