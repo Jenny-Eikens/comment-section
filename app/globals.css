@@ -4,15 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TODO for later:
-- find better solution than putting date in grid-area user
-*/
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 html {
   scroll-behavior: smooth;
   transition:
